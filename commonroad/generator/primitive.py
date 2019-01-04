@@ -647,3 +647,15 @@ class TrafficSign(StraightLine):
         export = super().export(config)
         export.objects.append(traffic_sign)
         return export
+
+class Ramp(StraightLine):
+    def __init__(self, args):
+        # length of current ramp .DAE
+        super().__init__(dict(length=0.8))
+
+    def export(self, config):
+        ramp = schema.ramp(orientation=math.pi, centerPoint=schema.point(x=self._length / 2, y=0))
+
+        export = super().export(config)
+        export.objects.append(ramp)
+        return export

@@ -12,6 +12,8 @@ def generate_sdf(xml_content, target_dir):
             content += obstacle.draw(obst)
     for sign in doc.trafficSign:
         content += traffic_sign.draw(sign, target_dir)
+    for ramp in doc.ramp:
+        print('Ramp', ramp, 'in world')
 
     with open(path.join(target_dir, "world.sdf"), "w") as file:
         file.write("<sdf version='1.6'><world name='default'>")

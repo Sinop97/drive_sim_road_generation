@@ -50,6 +50,10 @@ def eval_element(el):
         return [
             primitive.TrafficSign(el.attrib)
         ]
+    elif el.tag == "ramp":
+        return [
+            primitive.Ramp(el.attrib)
+        ]
     elif el.tag == "zebraCrossing":
         return [
             primitive.ZebraCrossing(el.attrib)

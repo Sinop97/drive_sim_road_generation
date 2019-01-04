@@ -73,6 +73,13 @@
                     <line length="2" />
                 </case>
                 <case w="1">
+                    <!-- ramp -->
+                    <line length="3" />
+                    <ramp />
+                    <trafficSign type="stvo-110-10" />
+                    <trafficSign type="stvo-108-10" />
+                </case>
+                <case w="1">
                     <leftArc radius="1.4" angle="45" />
                 </case>
                 <case w="1">

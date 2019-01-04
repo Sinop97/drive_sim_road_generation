@@ -18,14 +18,36 @@
 
     <xs:simpleType name="trafficSignType">
         <xs:restriction base="xs:string">
+            <xs:enumeration value="10_zone_beginn" />
+            <xs:enumeration value="20_zone_beginn" />
+            <xs:enumeration value="40_zone_beginn" />
+            <xs:enumeration value="50_zone_beginn" />
+            <xs:enumeration value="60_zone_beginn" />
+            <xs:enumeration value="70_zone_beginn" />
+            <xs:enumeration value="80_zone_beginn" />
+            <xs:enumeration value="90_zone_beginn" />
+            <xs:enumeration value="ende_10_zone" />
+            <xs:enumeration value="ende_20_zone" />
+            <xs:enumeration value="ende_40_zone" />
+            <xs:enumeration value="ende_50_zone" />
+            <xs:enumeration value="ende_60_zone" />
+            <xs:enumeration value="ende_70_zone" />
+            <xs:enumeration value="ende_80_zone" />
+            <xs:enumeration value="ende_90_zone" />
+            <xs:enumeration value="stvo-108-10" />
+            <xs:enumeration value="stvo-110-10" />
             <xs:enumeration value="stvo-306" />
             <xs:enumeration value="stvo-205" />
             <xs:enumeration value="stvo-206" />
             <xs:enumeration value="stvo-208" />
+            <xs:enumeration value="stvo-222" />
             <xs:enumeration value="stvo-276" />
             <xs:enumeration value="stvo-280" />
             <xs:enumeration value="stvo-274.1" />
             <xs:enumeration value="stvo-274.2" />
+            <xs:enumeration value="stvo-314" />
+            <xs:enumeration value="stvo-331.1" />
+            <xs:enumeration value="stvo-331.2" />
             <xs:enumeration value="stvo-350-10" />
             <xs:enumeration value="stvo-209-10" />
             <xs:enumeration value="stvo-209-20" />
@@ -101,6 +123,13 @@
 
     <xs:complexType name="trafficSign">
         <xs:attribute name="type" type="trafficSignType" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="ramp"/>
+
+    <xs:complexType name="trafficIsland">
+        <xs:attribute name="zebraWidth" type="xs:float" use="required" />
+        <xs:attribute name="signDistance" type="xs:float" use="required" />
     </xs:complexType>
 
     <xs:complexType name="intersection">
@@ -191,6 +220,8 @@
             <xs:element name="zebraCrossing" type="zebraCrossing" maxOccurs="unbounded"/>
             <xs:element name="blockedArea" type="blockedArea" maxOccurs="unbounded"/>
             <xs:element name="trafficSign" type="trafficSign" maxOccurs="unbounded"/>
+            <xs:element name="ramp" type="ramp" maxOccurs="unbounded"/>
+            <xs:element name="trafficIsland" type="trafficIsland" maxOccurs="unbounded"/>
             <xs:element name="intersection" type="intersection" maxOccurs="unbounded"/>
             <xs:element name="staticObstacle" type="staticObstacle" maxOccurs="unbounded"/>
             <xs:element name="parkingLot" type="parkingLot" maxOccurs="unbounded"/>

@@ -4,6 +4,7 @@ from commonroad import schema
 from commonroad.generator import road_generation, preset_parser
 import pkg_resources
 from lxml import etree
+import xml.dom.minidom
 
 SCHEMA = etree.XMLSchema(etree.parse(pkg_resources.resource_stream(
     "commonroad.generator", "template-schema.xsd")))
@@ -59,7 +60,9 @@ def main():
         lanelet_pairs[i-1][1].predecessor.lanelet.append(schema.laneletRef(ref=lanelet_pairs[i][1].id))
 
     with args.output as file:
-        file.write(doc.toxml())
+        doc_parsed = xml.dom.minidom.parseString(doc.toxml())
+        prettyfied_xml = doc_parsed.toprettyxml()
+        file.write(prettyfied_xml)
 
 def ego_vehicle():
     shape = schema.shape()
