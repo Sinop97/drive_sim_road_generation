@@ -2,6 +2,22 @@ import os, shutil, pkg_resources, math
 from os import path
 
 ALL_SIZES = {
+    "10_zone_beginn": {"w": 0.15, "h": 0.15},
+    "20_zone_beginn": {"w": 0.15, "h": 0.15},
+    "40_zone_beginn": {"w": 0.15, "h": 0.15},
+    "50_zone_beginn": {"w": 0.15, "h": 0.15},
+    "60_zone_beginn": {"w": 0.15, "h": 0.15},
+    "70_zone_beginn": {"w": 0.15, "h": 0.15},
+    "80_zone_beginn": {"w": 0.15, "h": 0.15},
+    "90_zone_beginn": {"w": 0.15, "h": 0.15},
+    "ende_10_zone": {"w": 0.15, "h": 0.15},
+    "ende_20_zone": {"w": 0.15, "h": 0.15},
+    "ende_40_zone": {"w": 0.15, "h": 0.15},
+    "ende_50_zone": {"w": 0.15, "h": 0.15},
+    "ende_60_zone": {"w": 0.15, "h": 0.15},
+    "ende_70_zone": {"w": 0.15, "h": 0.15},
+    "ende_80_zone": {"w": 0.15, "h": 0.15},
+    "ende_90_zone": {"w": 0.15, "h": 0.15},
     "stvo-274.1": {"w": 0.15, "h": 0.15}, # zone 30 (begin)
     "stvo-274.2": {"w": 0.15, "h": 0.15}, # zone 30 (end)
     "stvo-350-10": {"w": 0.15, "h": 0.15}, # zebra crossing
