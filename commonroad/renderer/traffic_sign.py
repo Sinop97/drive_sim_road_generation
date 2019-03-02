@@ -1,99 +1,90 @@
-import os, shutil, pkg_resources, math
-from os import path
-
-ALL_SIZES = {
-    "10_zone_beginn": {"w": 0.15, "h": 0.15},
-    "20_zone_beginn": {"w": 0.15, "h": 0.15},
-    "40_zone_beginn": {"w": 0.15, "h": 0.15},
-    "50_zone_beginn": {"w": 0.15, "h": 0.15},
-    "60_zone_beginn": {"w": 0.15, "h": 0.15},
-    "70_zone_beginn": {"w": 0.15, "h": 0.15},
-    "80_zone_beginn": {"w": 0.15, "h": 0.15},
-    "90_zone_beginn": {"w": 0.15, "h": 0.15},
-    "ende_10_zone": {"w": 0.15, "h": 0.15},
-    "ende_20_zone": {"w": 0.15, "h": 0.15},
-    "ende_40_zone": {"w": 0.15, "h": 0.15},
-    "ende_50_zone": {"w": 0.15, "h": 0.15},
-    "ende_60_zone": {"w": 0.15, "h": 0.15},
-    "ende_70_zone": {"w": 0.15, "h": 0.15},
-    "ende_80_zone": {"w": 0.15, "h": 0.15},
-    "ende_90_zone": {"w": 0.15, "h": 0.15},
-    "stvo-274.1": {"w": 0.15, "h": 0.15}, # zone 30 (begin)
-    "stvo-274.2": {"w": 0.15, "h": 0.15}, # zone 30 (end)
-    "stvo-350-10": {"w": 0.15, "h": 0.15}, # zebra crossing
-    "stvo-625-11": {"w": 0.3, "h": 0.1}, # large curve sign (left)
-    "stvo-625-21": {"w": 0.3, "h": 0.1} # large curve sign (right)
+SIGN_MESHES = {
+    "10_zone_beginn": {"mesh": "10zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "20_zone_beginn": {"mesh": "20zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "40_zone_beginn": {"mesh": "30zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "50_zone_beginn": {"mesh": "50zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "60_zone_beginn": {"mesh": "60zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "70_zone_beginn": {"mesh": "70zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "80_zone_beginn": {"mesh": "80zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "90_zone_beginn": {"mesh": "90zone_start", "collision_box_size": "0.11 0.15 0.29",
+                       "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_10_zone": {"mesh": "10zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_20_zone": {"mesh": "20zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_40_zone": {"mesh": "40zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_50_zone": {"mesh": "50zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_60_zone": {"mesh": "60zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_70_zone": {"mesh": "70zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_80_zone": {"mesh": "80zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "ende_90_zone": {"mesh": "90zone_end", "collision_box_size": "0.11 0.15 0.29",
+                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},
+    "stvo-108-10": {"mesh": "Steigung_Ende", "collision_box_size": "0.11 0.15 0.29",
+                    "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # gefaelle 10 (ende)
+    "stvo-110-10": {"mesh": "Steigung_Start", "collision_box_size": "0.11 0.15 0.29",
+                    "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # steigung 10 (begin)
+    "stvo-274.1": {"mesh": "30zone_start", "collision_box_size": "0.11 0.15 0.29",
+                   "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # zone 30 (begin)
+    "stvo-274.2": {"mesh": "30zone_end", "collision_box_size": "0.11 0.15 0.29",
+                   "collision_box_pose": "-0.055 0 0.145 0 0 0"}, # zone 30 (end)
+    "stvo-306": {"mesh": "Vorfahrt", "collision_box_size": "0.11 0.15 0.29",
+                 "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # vorfahrtstrasse
+    "stvo-350-10": {"mesh": "PedestrianCrossing", "collision_box_size": "0.11 0.15 0.29",
+                    "collision_box_pose": "-0.055 0 0.145 0 0 0"}, # zebra crossing
+    "stvo-625-10": {"mesh": "Abbiegeschild_links", "collision_box_size": "0.09 0.1 0.11",
+                    "collision_box_pose": "-0.045 0 0.055 0 0 0"},  # small curve sign (left)
+    "stvo-625-11": {"mesh": "Abbiegeschild_gross_links", "collision_box_size": "0.09 0.3 0.11",
+                    "collision_box_pose": "-0.045 0 0.055 0 0 0"}, # large curve sign (left)
+    "stvo-625-20": {"mesh": "Abbiegeschild_rechts", "collision_box_size": "0.09 0.1 0.11",
+                    "collision_box_pose": "-0.045 0 0.055 0 0 0"},  # small curve sign (right)
+    "stvo-625-21": {"mesh": "Abbiegeschild_gross_links", "collision_box_size": "0.09 0.3 0.11",
+                    "collision_box_pose": "-0.045 0 0.055 0 0 0"}  # large curve sign (right)
 }
-DEFAULT_SIZE = {"w": 0.1, "h": 0.1}
-HEIGHT = 0.15
+
 
 def draw(sign, target_dir):
-    os.makedirs(path.join(target_dir, "materials", "textures"), exist_ok=True)
-    os.makedirs(path.join(target_dir, "materials", "scripts"), exist_ok=True)
+    return model(sign.centerPoint.x, sign.centerPoint.y, 0.0, sign.orientation,
+                 "Sign/{0}".format(sign.id), SIGN_MESHES[sign.type]["mesh"],
+                 SIGN_MESHES[sign.type]["collision_box_pose"],
+                 SIGN_MESHES[sign.type]["collision_box_size"])
 
-    texture_file = "sign-{0}.png".format(sign.type)
-    material_file = "sign-{0}.material".format(sign.type)
 
-    texture_stream = pkg_resources.resource_stream("commonroad.renderer.signs",
-        "{0}.png".format(sign.type))
-    with open(path.join(target_dir, "materials", "textures", texture_file), "wb") as texture_target:
-        shutil.copyfileobj(texture_stream, texture_target)
-
-    with open(path.join(target_dir, "materials", "scripts", material_file), "w") as material_target:
-        material_target.write(material("Sign/{0}".format(sign.type), texture_file))
-
-    size = ALL_SIZES.get(sign.type, DEFAULT_SIZE)
-
-    return model(sign.centerPoint.x, sign.centerPoint.y, HEIGHT + size["h"]/2, sign.orientation + math.pi/2,
-        "Sign/{0}".format(sign.id), "Sign/{0}".format(sign.type), size["w"], size["h"])
-
-def material(name, file):
-    return """
-    material {name}
-    {{
-        technique
-        {{
-            pass
-            {{
-                scene_blend alpha_blend
-                depth_write off
-
-                texture_unit
-                {{
-                    texture {file}
-                    filtering trilinear
-                }}
-            }}
-        }}
-    }}
-    """.format(name=name, file=file)
-
-def model(x, y, z, orientation, name, material, width, height):
+def model(x, y, z, orientation, name, mesh, collision_box_pose, collision_box_size):
     return """
     <model name='{name}'>
-      <static>1</static>
       <link name='link'>
         <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
+          <cast_shadows>1</cast_shadows>
           <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>{width} {height}</size>
-            </plane>
+            <mesh>
+                <uri>file://meshes/{mesh}.dae</uri>
+                <scale>0.001 0.001 0.001</scale>
+            </mesh>
           </geometry>
-          <material>
-            <script>
-              <uri>file://materials/scripts</uri>
-              <uri>file://materials/textures</uri>
-              <name>{material}</name>
-            </script>
-          </material>
         </visual>
+        <collision name='collision'>
+            <pose>{collision_box_pose}</pose>
+            <geometry>
+                <box>
+                  <size>{collision_box_size}</size>
+                </box>
+            </geometry>
+        </collision>
         <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
       </link>
       <pose frame=''>{x} {y} {z} {angle} 0 {orientation}</pose>
     </model>
     """.format(x=x, y=y, z=z, orientation=orientation, name=name,
-        material=material, width=width, height=height, angle=math.pi/2)
+               mesh=mesh, angle=0, collision_box_pose=collision_box_pose, collision_box_size=collision_box_size)
