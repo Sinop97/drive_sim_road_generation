@@ -5,7 +5,7 @@ def draw(target_dir, lanelets):
     model_file = "car-cc2017.dae"
     model_stream = pkg_resources.resource_stream("commonroad.renderer.models",
         model_file)
-    with open(os.path.join(target_dir, model_file), "wb") as model_target:
+    with open(os.path.join(target_dir, 'meshes', model_file), "wb") as model_target:
         shutil.copyfileobj(model_stream, model_target)
 
     return """

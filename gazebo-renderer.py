@@ -9,6 +9,7 @@ if __name__ == "__main__":
         default=sys.stdin)
     parser.add_argument("--output", "-o", required=True)
     parser.add_argument("--force", "-f", action="store_true")
+    parser.add_argument("--add_vehicle", "-av", action="store_true")
     args = parser.parse_args()
 
     os.makedirs(args.output, exist_ok=True)
@@ -20,4 +21,4 @@ if __name__ == "__main__":
     with args.input as input_file:
         xml = input_file.read()
 
-    sdf.generate_sdf(xml, args.output)
+    sdf.generate_sdf(xml, args.output, args.add_vehicle)

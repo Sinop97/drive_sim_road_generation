@@ -35,6 +35,8 @@ SIGN_MESHES = {
                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # gefaelle 10 (ende)
     "stvo-110-10": {"mesh": "Steigung_Start", "collision_box_size": "0.11 0.15 0.29",
                     "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # steigung 10 (begin)
+    "stvo-208": {"mesh": "Barred_area", "collision_box_size": "0.11 0.15 0.29",
+                 "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # gegenverkehr vorrang (begin)
     "stvo-274.1": {"mesh": "30zone_start", "collision_box_size": "0.11 0.15 0.29",
                    "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # zone 30 (begin)
     "stvo-274.2": {"mesh": "30zone_end", "collision_box_size": "0.11 0.15 0.29",

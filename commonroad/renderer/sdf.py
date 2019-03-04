@@ -1,12 +1,15 @@
 from commonroad.renderer import groundplane, obstacle, traffic_sign, ego_vehicle
 from commonroad import schema
-from os import path
+from os import path, makedirs
 
-def generate_sdf(xml_content, target_dir):
+def generate_sdf(xml_content, target_dir, add_vehicle):
     doc = schema.CreateFromDocument(xml_content)
 
     content = groundplane.draw(doc, target_dir)
-    content += ego_vehicle.draw(target_dir, doc.lanelet)
+    if add_vehicle:
+        print('Ego vehicle ', add_vehicle)
+        print('Drawing ego vehicle')
+        content += ego_vehicle.draw(target_dir, doc.lanelet)
     for obst in doc.obstacle:
         if obst.type != "blockedArea":
             content += obstacle.draw(obst)
@@ -15,7 +18,10 @@ def generate_sdf(xml_content, target_dir):
     for ramp in doc.ramp:
         print('Ramp', ramp, 'in world')
 
-    with open(path.join(target_dir, "world.sdf"), "w") as file:
+    if not path.exists(path.join(target_dir, "worlds")):
+        makedirs(path.join(target_dir, "worlds"))
+
+    with open(path.join(target_dir, "worlds", "world.sdf"), "w+") as file:
         file.write("<sdf version='1.6'><world name='default'>")
         file.write(sun_light())
         file.write(content)
