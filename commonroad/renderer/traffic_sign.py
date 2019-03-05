@@ -65,7 +65,7 @@ def draw(sign, target_dir):
 
 def model(x, y, z, orientation, name, mesh, collision_box_pose, collision_box_size):
     return """
-    <model name='{name}'>
+    <model name='Sign-{name}'>
       <link name='link'>
         <visual name='visual'>
           <cast_shadows>1</cast_shadows>

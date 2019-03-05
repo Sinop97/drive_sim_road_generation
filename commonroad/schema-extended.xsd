@@ -319,8 +319,8 @@
                         <xs:enumeration value="ende_70_zone" />
                         <xs:enumeration value="ende_80_zone" />
                         <xs:enumeration value="ende_90_zone" />
-                        <xs:enumeration value="stvo-108-10" />
-                        <xs:enumeration value="stvo-110-10" />
+                        <!--<xs:enumeration value="stvo-108-10" />-->
+                        <!--<xs:enumeration value="stvo-110-10" />-->
                         <xs:enumeration value="stvo-306" />
                         <xs:enumeration value="stvo-205" />
                         <xs:enumeration value="stvo-206" />

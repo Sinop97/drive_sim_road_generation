@@ -1,4 +1,4 @@
-from commonroad.renderer import groundplane, obstacle, traffic_sign, ego_vehicle
+from commonroad.renderer import groundplane, obstacle, traffic_sign, ego_vehicle, special_objects
 from commonroad import schema
 from os import path, makedirs
 
@@ -16,7 +16,8 @@ def generate_sdf(xml_content, target_dir, add_vehicle):
     for sign in doc.trafficSign:
         content += traffic_sign.draw(sign, target_dir)
     for ramp in doc.ramp:
-        print('Ramp', ramp, 'in world')
+        print('Ramp', ramp, 'in world', dir(ramp))
+        content += special_objects.draw_ramp(ramp.centerPoint.x, ramp.centerPoint.y, ramp.orientation, ramp.id)
 
     if not path.exists(path.join(target_dir, "worlds")):
         makedirs(path.join(target_dir, "worlds"))
