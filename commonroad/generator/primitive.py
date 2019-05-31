@@ -3,6 +3,8 @@ import math
 from shapely.geometry import LineString, CAP_STYLE, JOIN_STYLE
 import scipy.integrate as integrate
 from commonroad import schema
+from functools import partial
+from scipy.optimize import root_scalar
 
 class MissingPointsException(Exception):
     pass
@@ -180,8 +182,28 @@ class TransrotPrimitive(Primitive):
                 y = obj.centerPoint.y
                 transformed = self._transform_point([x, y])
                 obj.orientation += self._angle
+                print('Orientation of trafficSign', obj.orientation)
                 obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
-
+            elif isinstance(obj, schema.ramp):
+                x = obj.centerPoint.x
+                y = obj.centerPoint.y
+                transformed = self._transform_point([x, y])
+                obj.orientation += self._angle
+                obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
+            elif isinstance(obj, schema.trafficIslandJunction):
+                for i in range(len(obj.point)):
+                    x = obj.point[i].x
+                    y = obj.point[i].y
+                    transformed = self._transform_point([x, y])
+                    obj.point[i].x = transformed[0]
+                    obj.point[i].y = transformed[1]
+            elif isinstance(obj, schema.roadMarking):
+                x = obj.centerPoint.x
+                y = obj.centerPoint.y
+                transformed = self._transform_point([x, y])
+                obj.orientation += self._angle
+                print('Orientation of roadMarking', obj.orientation)
+                obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
         return export
 
 class StraightLine(Primitive):
@@ -287,6 +309,15 @@ class QuadBezier(Primitive):
     def get_points(self):
         return self._points
 
+def _compute_cubic_bezier(t, p0, p1, p2, p3):
+    c0 = (1 - t) * p0 + t * p1
+    c1 = (1 - t) * p1 + t * p2
+    c2 = (1 - t) * p2 + t * p3
+    d0 = (1 - t) * c0 + t * c1
+    d1 = (1 - t) * c1 + t * c2
+    x = (1 - t) * d0 + t * d1
+    return x
+
 class CubicBezier(Primitive):
     def __init__(self, args):
         self._p0 = np.array([0, 0])
@@ -300,13 +331,7 @@ class CubicBezier(Primitive):
         self._points = []
         t = 0
         while t <= 1:
-            c0 = (1-t) * self._p0 + t * self._p1
-            c1 = (1-t) * self._p1 + t * self._p2
-            c2 = (1-t) * self._p2 + t * self._p3
-            d0 = (1-t) * c0 + t * c1
-            d1 = (1-t) * c1 + t * c2
-            x = (1-t) * d0 + t * d1
-            self._points.append(x)
+            self._points.append(_compute_cubic_bezier(t, self._p0, self._p1, self._p2, self._p3))
             t += 0.01
 
     def get_points(self):
@@ -646,16 +671,419 @@ class TrafficSign(StraightLine):
 
         export = super().export(config)
         export.objects.append(traffic_sign)
+
+        print(schema.STD_ANON.iteritems())
+        print('Traffic sign ', self._traffic_sign, type(self._traffic_sign), type(schema.STD_ANON.items()[0]), str(schema.STD_ANON.items()[0]))
+        print([str(item)[1:-1] for item in schema.roadMarkingType.iteritems()])
+        if self._traffic_sign in [str(item)[1:-1] for item in schema.roadMarkingType.items()]:
+            print('Adding item', self._traffic_sign)
+            road_marking = schema.roadMarking(type=schema.roadMarkingType(self._traffic_sign), orientation=-math.pi/2,
+                                              centerPoint=schema.point(x=self._length / 2, y=-config.road_width/2))
+            export.objects.append(road_marking)
         return export
 
 class Ramp(StraightLine):
     def __init__(self, args):
-        # length of current ramp .DAE
-        super().__init__(dict(length=0.8))
+        print('GOT A RAMP')
+        self._signDistance = float(args["signDistance"])
+        self._padding = 0.4
+        # length of current ramp .DAE + the signs we put around
+        super().__init__(dict(length=1.8+float(args["signDistance"])*2+2*self._padding))
 
     def export(self, config):
-        ramp = schema.ramp(orientation=math.pi, centerPoint=schema.point(x=self._length / 2, y=0))
+        ramp = schema.ramp(orientation=math.pi, centerPoint=schema.point(x=self._signDistance+self._padding, y=0))
 
         export = super().export(config)
         export.objects.append(ramp)
+        export.objects.append(schema.trafficSign(type="stvo-110-10", orientation=math.pi,
+                                                 centerPoint=schema.point(x=self._padding,
+                                                                          y=-config.road_width - 0.1)))
+        export.objects.append(schema.trafficSign(type="stvo-108-10", orientation=math.pi,
+                                                 centerPoint=schema.point(x=self._length-self._padding,
+                                                                          y=-config.road_width - 0.1)))
+        export.objects.append(schema.trafficSign(type="stvo-108-10", orientation=0,
+                                                 centerPoint=schema.point(x=self._padding,
+                                                                          y=config.road_width + 0.1)))
+        export.objects.append(schema.trafficSign(type="stvo-110-10", orientation=0,
+                                                 centerPoint=schema.point(x=self._length-self._padding,
+                                                                          y=config.road_width + 0.1)))
+        return export
+
+def add_quad_bezier_points(lanelet_points, t_step, p0, p1, p2, p3):
+    t = 0.0
+    while t <= 1:
+        point = _compute_cubic_bezier(t, p0, p1, p2, p3)
+        lanelet_points.append(schema.point(x=point[0], y=point[1]))
+        t += t_step
+
+def quad_bezier_line_intersection(p0, p1, p2, p3, A, d):
+    coefficients = []
+    # t^3 coefficients
+    coefficients.append(-(A * p0) + 3 *(A * p1) - 3 * (A * p2) + A * p3)
+    # t^2 coefficients
+    coefficients.append(3 * A * p0 - 6 * A * p1 + 3 * A * p2)
+    # t coefficients
+    coefficients.append(-3 * A * p0 - 3 * A * p1)
+    # free coefficients
+    coefficients.append(A * p0 - d)
+    print('shape', np.array(coefficients).shape)
+    print(np.array(coefficients))
+    return np.roots(np.array(coefficients))
+
+def quad_bezier_line_function(t, p0, p1, p2, p3, A, d):
+    return (1 - t) ** 3 * np.dot(A, p0) + 3 * (1 - t) ** 2 * t * np.dot(A, p1) + 3 * (1 - t) * t ** 2 * np.dot(A, p2) + \
+           t ** 3 * np.dot(A, p3) - d
+
+class TrafficIsland(Primitive):
+    def __init__(self, args):
+        print('ADDING TRAFFIC ISLAND')
+        self._islandWidth = float(args["islandWidth"])
+        self._zebraLength = float(args["zebraLength"])
+        self._signDistance = float(args["signDistance"])
+        self._zebraMarkingType = args["zebraMarkingType"]
+        self._padding = 0.2
+        self._curve_area_length = 0.8
+        self._length = self._padding * 2 + self._curve_area_length * 2 + self._zebraLength
+        # super().__init__(dict(length=self._length))
+        points = self.get_points()
+        self._principal_direction = np.array([points[1][0] - points[0][0],
+                                              points[1][1] - points[0][1]])
+        self._principal_direction = self._principal_direction/np.linalg.norm(self._principal_direction)
+        self._orthogonal_direction = np.array([-self._principal_direction[1], self._principal_direction[0]])
+        self._orthogonal_direction = self._orthogonal_direction/np.linalg.norm(self._orthogonal_direction)
+
+    def get_points(self):
+        return [[0, 0], [self._length, 0]]
+
+    def get_beginning(self):
+        return (np.array([0, 0]), math.pi, 0)
+
+    def get_ending(self):
+        return (np.array([self._length + self._zebraLength, 0]), 0, 0)
+
+    def export(self, config):
+        points = self.get_points()
+
+        # straight padding lines
+        padding_right = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        padding_left = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        padding_right.rightBoundary.lineMarking = "solid"
+        padding_right.leftBoundary.lineMarking = "dashed"
+        padding_left.rightBoundary.lineMarking = "solid"
+        padding_left.leftBoundary.lineMarking = "dashed"
+        padding_right.leftBoundary.point.append(schema.point(x=points[0][0], y=points[0][1]))
+        padding_left.leftBoundary.point.append(schema.point(x=points[0][0], y=points[0][1]))
+        starting_point = np.array(points[0])
+        right_starting_point = starting_point - self._orthogonal_direction * config.road_width
+        padding_right.rightBoundary.point.append(schema.point(x=right_starting_point[0], y=right_starting_point[1]))
+        left_starting_point = starting_point + self._orthogonal_direction * config.road_width
+        padding_left.rightBoundary.point.append(schema.point(x=left_starting_point[0], y=left_starting_point[1]))
+
+        # cubic beziers connecting to zebra section
+        split_right = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        split_right.rightBoundary.lineMarking = "solid"
+        split_right.leftBoundary.lineMarking = "solid"
+
+        split_left = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        split_left.rightBoundary.lineMarking = "solid"
+        split_left.leftBoundary.lineMarking = "solid"
+
+        split_starting_point = starting_point + self._principal_direction * self._padding
+        split_right.leftBoundary.point.append(schema.point(x=split_starting_point[0], y=split_starting_point[1]))
+        split_left.leftBoundary.point.append(schema.point(x=split_starting_point[0], y=split_starting_point[1]))
+        right_split_starting = split_starting_point - self._orthogonal_direction * config.road_width
+        split_right.rightBoundary.point.append(schema.point(x=right_split_starting[0], y=right_split_starting[1]))
+        left_split_starting = split_starting_point + self._orthogonal_direction * config.road_width
+        split_left.rightBoundary.point.append(schema.point(x=left_split_starting[0], y=left_split_starting[1]))
+
+        padding_right.leftBoundary.point.append(schema.point(x=split_starting_point[0], y=split_starting_point[1]))
+        padding_left.leftBoundary.point.append(schema.point(x=split_starting_point[0], y=split_starting_point[1]))
+        padding_right.rightBoundary.point.append(schema.point(x=right_split_starting[0], y=right_split_starting[1]))
+        padding_left.rightBoundary.point.append(schema.point(x=left_split_starting[0], y=left_split_starting[1]))
+        padding_left.leftBoundary.point.reverse()
+        padding_left.rightBoundary.point.reverse()
+
+        zebra_start_right_center = split_starting_point + self._principal_direction * self._curve_area_length \
+                                            - self._orthogonal_direction * self._islandWidth * 0.5
+        zebra_start_right_outer = split_starting_point + self._principal_direction * self._curve_area_length \
+                                            - self._orthogonal_direction * (self._islandWidth * 0.5 + config.road_width)
+        p1_offset = 0.2
+        t_step = 0.01
+        right_center_p0 = split_starting_point
+        right_center_p1 = split_starting_point + self._principal_direction * p1_offset
+        right_center_p2 = zebra_start_right_center - self._principal_direction * p1_offset
+        right_center_p3 = zebra_start_right_center
+        add_quad_bezier_points(split_right.leftBoundary.point, t_step, right_center_p0, right_center_p1,
+                               right_center_p2, right_center_p3)
+
+        right_outer_p0 = right_split_starting
+        right_outer_p1 = right_split_starting + self._principal_direction * p1_offset
+        right_outer_p2 = zebra_start_right_outer - self._principal_direction * p1_offset
+        right_outer_p3 = zebra_start_right_outer
+        add_quad_bezier_points(split_right.rightBoundary.point, t_step, right_outer_p0, right_outer_p1, right_outer_p2,
+                               right_outer_p3)
+
+        # left lanelet
+        zebra_start_left_center = split_starting_point + self._principal_direction * self._curve_area_length \
+                                            + self._orthogonal_direction * self._islandWidth * 0.5
+        zebra_start_left_outer = split_starting_point + self._principal_direction * self._curve_area_length \
+                                            + self._orthogonal_direction * (self._islandWidth * 0.5 + config.road_width)
+        left_center_p0 = split_starting_point
+        left_center_p1 = split_starting_point + self._principal_direction * p1_offset
+        left_center_p2 = zebra_start_left_center - self._principal_direction * p1_offset
+        left_center_p3 = zebra_start_left_center
+        add_quad_bezier_points(split_left.leftBoundary.point, t_step, left_center_p0, left_center_p1, left_center_p2,
+                               left_center_p3)
+
+        left_outer_p0 = left_split_starting
+        left_outer_p1 = left_split_starting + self._principal_direction * p1_offset
+        left_outer_p2 = zebra_start_left_outer - self._principal_direction * p1_offset
+        left_outer_p3 = zebra_start_left_outer
+        add_quad_bezier_points(split_left.rightBoundary.point, t_step, left_outer_p0, left_outer_p1, left_outer_p2,
+                               left_outer_p3)
+
+        # populate center blocked area object
+        starting_junction = schema.trafficIslandJunction()
+        starting_junction.point.append(schema.point(x=zebra_start_right_center[0], y=zebra_start_right_center[1]))
+        starting_junction.point.append(schema.point(x=zebra_start_left_center[0], y=zebra_start_left_center[1]))
+
+        A = np.zeros(2)
+        A[0] = math.sin(27 / 180 * math.pi)
+        A[1] = math.cos(27 / 180 * math.pi)
+        for y in np.arange(zebra_start_right_center[1], zebra_start_left_center[1],
+                           0.15 * math.tan(27 / 180 * math.pi)):
+            d = zebra_start_right_center[0] * A[0] + y * A[1]
+            sol = root_scalar(partial(quad_bezier_line_function, p0=left_center_p0, p1=left_center_p1,
+                                      p2=left_center_p2, p3=left_center_p3, A=A, d=d), bracket=[0, 1], method='brentq')
+            sol_point = _compute_cubic_bezier(sol.root, left_center_p0, left_center_p1, left_center_p2, left_center_p3)
+            starting_junction.point.append(schema.point(x=zebra_start_right_center[0], y=y))
+            starting_junction.point.append(schema.point(x=sol_point[0], y=sol_point[1]))
+
+        y = zebra_start_right_center[1]
+        for x in np.arange(zebra_start_right_center[0], split_starting_point[0], -0.15):
+            d = x * A[0] + y * A[1]
+            try:
+                sol_right = root_scalar(partial(quad_bezier_line_function, p0=right_center_p0, p1=right_center_p1,
+                                                p2=right_center_p2, p3=right_center_p3, A=A, d=d),
+                                        bracket=[0, 1], method='brentq')
+            except ValueError:
+                # in case we have went too low and there is no intersections, skip
+                continue
+            sol_point_right = _compute_cubic_bezier(sol_right.root, right_center_p0, right_center_p1, right_center_p2,
+                                                    right_center_p3)
+            starting_junction.point.append(schema.point(x=sol_point_right[0], y=sol_point_right[1]))
+
+            sol_left = root_scalar(partial(quad_bezier_line_function, p0=left_center_p0, p1=left_center_p1,
+                                           p2=left_center_p2, p3=left_center_p3, A=A, d=d), bracket=[0, 1],
+                                   method='brentq')
+            sol_point_left = _compute_cubic_bezier(sol_left.root, left_center_p0, left_center_p1, left_center_p2,
+                                                   left_center_p3)
+            starting_junction.point.append(schema.point(x=sol_point_left[0], y=sol_point_left[1]))
+
+        if self._zebraMarkingType == "lines":
+            split_right.stopLine = "dashed"
+            split_right.stopLineAttributes = schema.lineMarkingAttributes(lineWidth=0.02, segmentLength=0.04,
+                                                                          segmentGap=0.04)
+
+        # zebra
+        zebra_start_right_center = zebra_start_right_center
+        zebra_start_right_outer = zebra_start_right_outer
+        zebra_end_right_center = zebra_start_right_center + self._principal_direction * self._zebraLength
+        zebra_end_right_outer = zebra_start_right_outer + self._principal_direction * self._zebraLength
+
+        zebra_start_left_center = zebra_start_left_center
+        zebra_start_left_outer = zebra_start_left_outer
+        zebra_end_left_center = zebra_start_left_center + self._principal_direction * self._zebraLength
+        zebra_end_left_outer = zebra_start_left_outer + self._principal_direction * self._zebraLength
+
+        crossing_right = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        crossing_left = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+
+        if self._zebraMarkingType == "zebra":
+            split_right.rightBoundary.point.append(schema.point(x=zebra_end_right_outer[0],
+                                                                y=zebra_end_right_outer[1]))
+            split_right.leftBoundary.point.append(schema.point(x=zebra_end_right_center[0],
+                                                               y=zebra_end_right_center[1]))
+            split_left.rightBoundary.point.append(schema.point(x=zebra_end_left_outer[0],
+                                                               y=zebra_end_left_outer[1]))
+            split_left.leftBoundary.point.append(schema.point(x=zebra_end_left_center[0],
+                                                              y=zebra_end_left_center[1]))
+
+            crossing_right.type = "zebraCrossing"
+            crossing_right.leftBoundary.point.append(schema.point(x=zebra_start_right_center[0],
+                                                                  y=zebra_start_right_center[1]))
+            crossing_right.leftBoundary.point.append(schema.point(x=zebra_start_right_outer[0],
+                                                                  y=zebra_start_right_outer[1]))
+            crossing_right.rightBoundary.point.append(schema.point(x=zebra_end_right_center[0],
+                                                                   y=zebra_end_right_center[1]))
+            crossing_right.rightBoundary.point.append(schema.point(x=zebra_end_right_outer[0],
+                                                                   y=zebra_end_right_outer[1]))
+
+            crossing_left.type = "zebraCrossing"
+            crossing_left.leftBoundary.point.append(schema.point(x=zebra_start_left_center[0],
+                                                                  y=zebra_start_left_center[1]))
+            crossing_left.leftBoundary.point.append(schema.point(x=zebra_start_left_outer[0],
+                                                                  y=zebra_start_left_outer[1]))
+            crossing_left.rightBoundary.point.append(schema.point(x=zebra_end_left_center[0],
+                                                                   y=zebra_end_left_center[1]))
+            crossing_left.rightBoundary.point.append(schema.point(x=zebra_end_left_outer[0],
+                                                                   y=zebra_end_left_outer[1]))
+        elif self._zebraMarkingType == "lines":
+            crossing_right.rightBoundary.lineMarking = "solid"
+            crossing_right.leftBoundary.lineMarking = "solid"
+            crossing_right.leftBoundary.point.append(schema.point(x=zebra_start_right_center[0],
+                                                                  y=zebra_start_right_center[1]))
+            crossing_right.leftBoundary.point.append(schema.point(x=zebra_end_right_center[0],
+                                                                  y=zebra_end_right_center[1]))
+            crossing_right.rightBoundary.point.append(schema.point(x=zebra_start_right_outer[0],
+                                                                   y=zebra_start_right_outer[1]))
+            crossing_right.rightBoundary.point.append(schema.point(x=zebra_end_right_outer[0],
+                                                                   y=zebra_end_right_outer[1]))
+            crossing_right.stopLine = "dashed"
+            crossing_right.stopLineAttributes = split_right.stopLineAttributes
+
+            crossing_left.rightBoundary.lineMarking = "solid"
+            crossing_left.leftBoundary.lineMarking = "solid"
+            crossing_left.leftBoundary.point.append(schema.point(x=zebra_start_left_center[0],
+                                                                 y=zebra_start_left_center[1]))
+            crossing_left.leftBoundary.point.append(schema.point(x=zebra_end_left_center[0],
+                                                                 y=zebra_end_left_center[1]))
+            crossing_left.rightBoundary.point.append(schema.point(x=zebra_start_left_outer[0],
+                                                                  y=zebra_start_left_outer[1]))
+            crossing_left.rightBoundary.point.append(schema.point(x=zebra_end_left_outer[0],
+                                                                  y=zebra_end_left_outer[1]))
+            crossing_left.leftBoundary.point.reverse()
+            crossing_left.rightBoundary.point.reverse()
+            crossing_left.stopLine = "dashed"
+            crossing_left.stopLineAttributes = split_right.stopLineAttributes
+
+        split_left.leftBoundary.point.reverse()
+        split_left.rightBoundary.point.reverse()
+
+        # quad beziers merging at the back
+        merge_right = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        merge_right.rightBoundary.lineMarking = "solid"
+        merge_right.leftBoundary.lineMarking = "solid"
+
+        merge_left = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        merge_left.rightBoundary.lineMarking = "solid"
+        merge_left.leftBoundary.lineMarking = "solid"
+
+        merge_right.leftBoundary.point.append(schema.point(x=zebra_end_right_center[0], y=zebra_end_right_center[1]))
+        merge_left.leftBoundary.point.append(schema.point(x=zebra_end_left_center[0], y=zebra_end_left_center[1]))
+        merge_right.rightBoundary.point.append(schema.point(x=zebra_end_right_outer[0], y=zebra_end_right_outer[1]))
+        merge_left.rightBoundary.point.append(schema.point(x=zebra_end_left_outer[0], y=zebra_end_left_outer[1]))
+
+        merge_center = split_starting_point + self._principal_direction * (self._curve_area_length * 2 +
+                                                                           self._zebraLength)
+        merge_outer_right = merge_center - self._orthogonal_direction * config.road_width
+        merge_outer_left = merge_center + self._orthogonal_direction * config.road_width
+
+        p1_offset = 0.4
+        t_step = 0.01
+        right_center_p0 = zebra_end_right_center
+        right_center_p1 = zebra_end_right_center + self._principal_direction * p1_offset
+        right_center_p2 = merge_center - self._principal_direction * p1_offset
+        right_center_p3 = merge_center
+        add_quad_bezier_points(merge_right.leftBoundary.point, t_step, right_center_p0, right_center_p1,
+                               right_center_p2, right_center_p3)
+        right_outer_p0 = zebra_end_right_outer
+        right_outer_p1 = zebra_end_right_outer + self._principal_direction * p1_offset
+        right_outer_p2 = merge_outer_right - self._principal_direction * p1_offset
+        right_outer_p3 = merge_outer_right
+        add_quad_bezier_points(merge_right.rightBoundary.point, t_step, right_outer_p0, right_outer_p1, right_outer_p2,
+                               right_outer_p3)
+
+        # left lanelet
+        left_center_p0 = zebra_end_left_center
+        left_center_p1 = zebra_end_left_center + self._principal_direction * p1_offset
+        left_center_p2 = merge_center - self._principal_direction * p1_offset
+        left_center_p3 = merge_center
+        add_quad_bezier_points(merge_left.leftBoundary.point, t_step, left_center_p0, left_center_p1, left_center_p2,
+                               left_center_p3)
+
+        left_outer_p0 = zebra_end_left_outer
+        left_outer_p1 = zebra_end_left_outer + self._principal_direction * p1_offset
+        left_outer_p2 = merge_outer_left - self._principal_direction * p1_offset
+        left_outer_p3 = merge_outer_left
+        add_quad_bezier_points(merge_left.rightBoundary.point, t_step, left_outer_p0, left_outer_p1, left_outer_p2,
+                               left_outer_p3)
+
+        merge_left.leftBoundary.point.reverse()
+        merge_left.rightBoundary.point.reverse()
+
+        if self._zebraMarkingType == "lines":
+            merge_left.stopLine = "dashed"
+            merge_left.stopLineAttributes = split_right.stopLineAttributes
+
+        # junction object at the end
+        merging_junction = schema.trafficIslandJunction()
+        merging_junction.point.append(schema.point(x=zebra_end_right_center[0], y=zebra_end_right_center[1]))
+        merging_junction.point.append(schema.point(x=zebra_end_left_center[0], y=zebra_end_left_center[1]))
+
+        A = np.zeros(2)
+        A[0] = -math.sin(27 / 180 * math.pi)
+        A[1] = math.cos(27 / 180 * math.pi)
+        for y in np.arange(zebra_end_right_center[1], zebra_end_left_center[1], 0.15 * math.tan(27 / 180 * math.pi)):
+            d = zebra_end_right_center[0] * A[0] + y * A[1]
+            sol = root_scalar(partial(quad_bezier_line_function, p0=left_center_p0, p1=left_center_p1,
+                                      p2=left_center_p2, p3=left_center_p3, A=A, d=d), bracket=[0, 1], method='brentq')
+            sol_point = _compute_cubic_bezier(sol.root, left_center_p0, left_center_p1, left_center_p2, left_center_p3)
+            starting_junction.point.append(schema.point(x=zebra_end_right_center[0], y=y))
+            starting_junction.point.append(schema.point(x=sol_point[0], y=sol_point[1]))
+
+        y = zebra_end_right_center[1]
+        for x in np.arange(zebra_end_right_center[0], merge_center[0], 0.15):
+            d = x * A[0] + y * A[1]
+            try:
+                sol_right = root_scalar(partial(quad_bezier_line_function, p0=right_center_p0, p1=right_center_p1,
+                                                p2=right_center_p2, p3=right_center_p3, A=A, d=d),
+                                        bracket=[0, 1], method='brentq')
+            except ValueError:
+                # in case we have went too low and there is no intersections, skip
+                continue
+            sol_point_right = _compute_cubic_bezier(sol_right.root, right_center_p0, right_center_p1, right_center_p2,
+                                                    right_center_p3)
+            starting_junction.point.append(schema.point(x=sol_point_right[0], y=sol_point_right[1]))
+
+            sol_left = root_scalar(partial(quad_bezier_line_function, p0=left_center_p0, p1=left_center_p1,
+                                           p2=left_center_p2, p3=left_center_p3, A=A, d=d), bracket=[0, 1],
+                                   method='brentq')
+            sol_point_left = _compute_cubic_bezier(sol_left.root, left_center_p0, left_center_p1, left_center_p2,
+                                                   left_center_p3)
+            starting_junction.point.append(schema.point(x=sol_point_left[0], y=sol_point_left[1]))
+
+        # end straight padding lines
+        end_padding_right = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        end_padding_left = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
+        end_padding_right.rightBoundary.lineMarking = "solid"
+        end_padding_right.leftBoundary.lineMarking = "dashed"
+        end_padding_left.rightBoundary.lineMarking = "solid"
+        end_padding_left.leftBoundary.lineMarking = "dashed"
+        end_padding_right.leftBoundary.point.append(schema.point(x=merge_center[0], y=merge_center[1]))
+        end_padding_left.leftBoundary.point.append(schema.point(x=merge_center[0], y=merge_center[1]))
+        end_padding_right.rightBoundary.point.append(schema.point(x=merge_outer_right[0], y=merge_outer_right[1]))
+        end_padding_left.rightBoundary.point.append(schema.point(x=merge_outer_left[0], y=merge_outer_left[1]))
+
+        end_center = merge_center + self._principal_direction * self._padding
+        end_right = end_center - self._orthogonal_direction * config.road_width
+        end_left = end_center + self._orthogonal_direction * config.road_width
+
+        end_padding_right.leftBoundary.point.append(schema.point(x=end_center[0], y=end_center[1]))
+        end_padding_left.leftBoundary.point.append(schema.point(x=end_center[0], y=end_center[1]))
+        end_padding_right.rightBoundary.point.append(schema.point(x=end_right[0], y=end_right[1]))
+        end_padding_left.rightBoundary.point.append(schema.point(x=end_left[0], y=end_left[1]))
+
+        export = Export([padding_right, padding_left, split_right, split_left, crossing_right, crossing_left,
+                         merge_right, merge_left, end_padding_right, end_padding_left],
+                        [(padding_right, padding_left), (split_right, split_left), (crossing_right, crossing_left),
+                         (merge_right, merge_left), (end_padding_right, end_padding_left)])
+        export.objects.append(schema.trafficSign(type="stvo-222", orientation=-math.pi/2,
+                                                 centerPoint=schema.point(x=self._padding + self._signDistance, y=0.0)))
+        export.objects.append(schema.trafficSign(type="stvo-222", orientation=math.pi/2,
+                                                 centerPoint=schema.point(x=self._length-self._padding -
+                                                                            self._signDistance, y=0.0)))
+        export.objects.append(starting_junction)
+        export.objects.append(merging_junction)
+
         return export

@@ -125,11 +125,49 @@
         <xs:attribute name="type" type="trafficSignType" use="required" />
     </xs:complexType>
 
-    <xs:complexType name="ramp"/>
+    <xs:complexType name="ramp">
+        <xs:attribute name="signDistance" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="1.0"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
 
     <xs:complexType name="trafficIsland">
-        <xs:attribute name="zebraWidth" type="xs:float" use="required" />
-        <xs:attribute name="signDistance" type="xs:float" use="required" />
+        <xs:attribute name="zebraLength" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="0.4"/>
+                  <xs:maxInclusive value="0.45"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="islandWidth" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="0.15"/>
+                  <xs:maxInclusive value="0.35"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="signDistance" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="0.15"/>
+                  <xs:maxInclusive value="0.25"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="zebraMarkingType" default="lines">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="zebra" />
+                    <xs:enumeration value="lines" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="intersection">

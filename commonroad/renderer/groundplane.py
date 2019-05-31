@@ -32,12 +32,19 @@ def draw_stop_line(ctx, lanelet):
     p2 = lanelet.rightBoundary.point[-1]
 
     if lanelet.stopLine:
+        lineWidth = 0.04
+        segmentLength = 0.08
+        segmentGap = 0.06
         if lanelet.stopLine == "dashed":
-            ctx.set_dash([0.08, 0.06])
+            if lanelet.stopLineAttributes:
+                lineWidth = lanelet.stopLineAttributes.lineWidth
+                segmentLength = lanelet.stopLineAttributes.segmentLength
+                segmentGap = lanelet.stopLineAttributes.segmentGap
+            ctx.set_dash([segmentLength, segmentGap])
         else:
             ctx.set_dash([])
             ctx.set_line_cap(cairo.LINE_CAP_BUTT)
-        ctx.set_line_width(0.04)
+        ctx.set_line_width(lineWidth)
         ctx.move_to(p1.x, p1.y)
         ctx.line_to(p2.x, p2.y)
         ctx.stroke()
@@ -69,6 +76,43 @@ def draw_shape(ctx, shape):
         draw_circle(ctx, circ)
     for poly in shape.polygon:
         draw_polygon(ctx, poly)
+
+def draw_island_junction(ctx, island):
+    ctx.save()
+    ctx.set_dash([])
+    ctx.set_line_width (0.02)
+    for i in range(0, len(island.point), 2):
+        ctx.move_to(island.point[i].x, island.point[i].y)
+        ctx.line_to(island.point[i+1].x, island.point[i+1].y)
+    ctx.stroke()
+    ctx.restore()
+
+def text_extent(font, font_size, text, *args, **kwargs):
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+    ctx = cairo.Context(surface)
+    ctx.select_font_face(font, *args, **kwargs)
+    ctx.set_font_size(font_size)
+    return ctx.text_extents(text)
+
+def draw_road_marking(ctx, marking):
+    ctx.save()
+    ctx.set_dash([])
+    font = "DIN 1451 Engschrift"
+    font_size = 0.4
+    text = '30'
+    font_args = [cairo.FONT_SLANT_NORMAL]
+    (x_bearing, y_bearing, text_width, text_height,
+     x_advance, y_advance) = text_extent(font, font_size, text, *font_args)
+    print(marking.orientation)
+    ctx.move_to(marking.centerPoint.x - text_width/2, marking.centerPoint.y + text_height/2)
+    ctx.rotate(marking.orientation)
+    ctx.select_font_face(font, *font_args)
+    ctx.set_font_size(font_size)
+    ctx.text_path(text)
+    ctx.set_line_width(0.01)
+    # ctx.fill_preserve()
+    ctx.stroke()
+    ctx.restore()
 
 def draw_stripes_rect(ctx, rectangle):
     ctx.save()
@@ -147,8 +191,9 @@ def draw_obstacle(ctx, obstacle):
     if obstacle.type == "blockedArea":
         for rect in obstacle.shape.rectangle:
             draw_stripes_rect(ctx, rect)
-    else:
-        draw_shape(ctx, obstacle.shape)
+    # uncomment if you want white boxes under the obstacles
+    #else:
+    #    draw_shape(ctx, obstacle.shape)
 
 def draw_all_boundaries(ctx, lanelet_list, boundary_name):
     all_ids = [lanelet.id for lanelet in lanelet_list
@@ -209,7 +254,6 @@ def draw(doc, target_dir):
     bounding_box.y_min -= PADDING
     bounding_box.x_max += PADDING
     bounding_box.y_max += PADDING
-    print(bounding_box)
 
     width = math.ceil((bounding_box.x_max - bounding_box.x_min) * PIXEL_PER_UNIT)
     height = math.ceil((bounding_box.y_max - bounding_box.y_min) * PIXEL_PER_UNIT)
@@ -253,6 +297,12 @@ def draw(doc, target_dir):
 
         for obstacle in doc.obstacle:
             draw_obstacle(ctx, obstacle)
+
+        for island_junction in doc.islandJunction:
+            draw_island_junction(ctx, island_junction)
+
+        for road_marking in doc.roadMarking:
+            draw_road_marking(ctx, road_marking)
 
         sha_256 = hashlib.sha256()
         sha_256.update(surface.get_data())

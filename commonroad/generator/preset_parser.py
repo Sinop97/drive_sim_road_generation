@@ -38,6 +38,10 @@ def eval_element(el):
         return [
             primitive.BlockedAreaObstacle(el.attrib)
         ]
+    elif el.tag == "trafficIsland":
+        return [
+            primitive.TrafficIsland(el.attrib)
+        ]
     elif el.tag == "intersection":
         return [
             primitive.Intersection(el.attrib)

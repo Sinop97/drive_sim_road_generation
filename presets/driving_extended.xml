@@ -74,10 +74,14 @@
                 </case>
                 <case w="1">
                     <!-- ramp -->
-                    <line length="3" />
-                    <ramp />
-                    <trafficSign type="stvo-110-10" />
-                    <trafficSign type="stvo-108-10" />
+                    <!--<trafficSign type="stvo-110-10" />-->
+                    <!--<line length="1" />-->
+                    <ramp signDistance="1.0"/>
+                    <!--<line length="1" />-->
+                    <!--<trafficSign type="stvo-108-10" />-->
+                </case>
+                <case w="1">
+                    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
                 </case>
                 <case w="1">
                     <leftArc radius="1.4" angle="45" />

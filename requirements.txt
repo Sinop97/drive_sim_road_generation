@@ -4,4 +4,4 @@ cairocffi
 tqdm
 matplotlib
 shapely
-scipy
+scipy>=1.2.1

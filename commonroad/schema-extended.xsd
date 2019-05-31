@@ -219,6 +219,15 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="lineMarkingAttributes">
+        <xs:sequence>
+            <xs:element name="lineWidth" type="xs:float" />
+            <xs:element name="segmentLength" type="xs:float" />
+            <xs:element name="segmentGap" type="xs:float" />
+        </xs:sequence>
+    </xs:complexType>
+
+
     <xs:complexType name="laneletRef">
         <xs:attribute name="ref" type="xs:integer"
             use="required"/>
@@ -268,6 +277,7 @@
                 minOccurs="0" />
             <!-- EXTENSION -->
             <xs:element name="stopLine" type="lineMarking" minOccurs="0" />
+            <xs:element name="stopLineAttributes" type="lineMarkingAttributes" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
@@ -297,6 +307,46 @@
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
 
+    <xs:complexType name="trafficIslandJunction">
+        <xs:sequence>
+            <xs:element name="point" type="point" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="roadMarkingType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="10_zone_beginn" />
+            <xs:enumeration value="20_zone_beginn" />
+            <xs:enumeration value="40_zone_beginn" />
+            <xs:enumeration value="50_zone_beginn" />
+            <xs:enumeration value="60_zone_beginn" />
+            <xs:enumeration value="70_zone_beginn" />
+            <xs:enumeration value="80_zone_beginn" />
+            <xs:enumeration value="90_zone_beginn" />
+            <xs:enumeration value="ende_10_zone" />
+            <xs:enumeration value="ende_20_zone" />
+            <xs:enumeration value="ende_40_zone" />
+            <xs:enumeration value="ende_50_zone" />
+            <xs:enumeration value="ende_60_zone" />
+            <xs:enumeration value="ende_70_zone" />
+            <xs:enumeration value="ende_80_zone" />
+            <xs:enumeration value="ende_90_zone" />
+            <xs:enumeration value="stvo-274.1" />
+            <xs:enumeration value="stvo-274.2" />
+            <xs:enumeration value="turn_left" />
+            <xs:enumeration value="turn_right" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="roadMarking">
+        <xs:sequence>
+            <xs:element name="type" type="roadMarkingType" />
+            <xs:element name="orientation" type="xs:float" />
+            <xs:element name="centerPoint" type="point" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+    </xs:complexType>
+
     <!-- EXTENSION -->
     <xs:complexType name="trafficSign">
         <xs:sequence>
@@ -319,8 +369,8 @@
                         <xs:enumeration value="ende_70_zone" />
                         <xs:enumeration value="ende_80_zone" />
                         <xs:enumeration value="ende_90_zone" />
-                        <!--<xs:enumeration value="stvo-108-10" />-->
-                        <!--<xs:enumeration value="stvo-110-10" />-->
+                        <xs:enumeration value="stvo-108-10" />
+                        <xs:enumeration value="stvo-110-10" />
                         <xs:enumeration value="stvo-306" />
                         <xs:enumeration value="stvo-205" />
                         <xs:enumeration value="stvo-206" />
@@ -357,16 +407,6 @@
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
 
-    <xs:complexType name="trafficIsland">
-        <xs:sequence>
-            <xs:element name="zebraWidth" type="xs:float" />
-            <xs:element name="signDistance" type="xs:float" />
-            <xs:element name="orientation" type="xs:float" />
-            <xs:element name="centerPoint" type="point" />
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:integer" use="required" />
-    </xs:complexType>
-
     <!-- EXTENSION -->
     <xs:complexType name="intersection">
         <xs:sequence>
@@ -395,9 +435,11 @@
                 maxOccurs="unbounded" />
             <xs:element name="ramp" type="ramp"
                 maxOccurs="unbounded" />
-            <xs:element name="trafficIsland" type="trafficIsland"
-                maxOccurs="unbounded" />
             <xs:element name="intersection" type="intersection"
+                maxOccurs="unbounded" />
+            <xs:element name="islandJunction" type="trafficIslandJunction"
+                maxOccurs="unbounded" />
+            <xs:element name="roadMarking" type="roadMarking"
                 maxOccurs="unbounded" />
         </xs:choice>
         <xs:attribute name="commonRoadVersion" use="required">
