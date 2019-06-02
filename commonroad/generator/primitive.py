@@ -182,7 +182,6 @@ class TransrotPrimitive(Primitive):
                 y = obj.centerPoint.y
                 transformed = self._transform_point([x, y])
                 obj.orientation += self._angle
-                print('Orientation of trafficSign', obj.orientation)
                 obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
             elif isinstance(obj, schema.ramp):
                 x = obj.centerPoint.x
@@ -202,7 +201,7 @@ class TransrotPrimitive(Primitive):
                 y = obj.centerPoint.y
                 transformed = self._transform_point([x, y])
                 obj.orientation += self._angle
-                print('Orientation of roadMarking', obj.orientation)
+                print('ADDING ROAD MARKING, Orientation of roadMarking', obj.orientation)
                 obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
         return export
 

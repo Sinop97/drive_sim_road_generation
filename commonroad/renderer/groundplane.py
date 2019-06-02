@@ -7,10 +7,44 @@ import os
 import hashlib
 from tqdm import tqdm
 import numpy as np
+from enum import Enum
+from collections import namedtuple
 
 PIXEL_PER_UNIT = 500
 TILE_SIZE = 2048
 PADDING = 3
+
+
+class MarkerImage(Enum):
+    TURN_LEFT = "turn_left.png"
+    TURN_RIGHT = "turn_right.png"
+
+StreetMarking = namedtuple('StreetMarking', ['marker_image', 'marker_text', 'crossed'])
+
+
+ROADMARKING_TYPE_TO_VISUAL = {
+    "10_zone_beginn": StreetMarking(marker_image=None, marker_text='10', crossed=False),
+    "20_zone_beginn": StreetMarking(marker_image=None, marker_text='20', crossed=False),
+    "stvo-274.1": StreetMarking(marker_image=None, marker_text='30', crossed=False),
+    "40_zone_beginn": StreetMarking(marker_image=None, marker_text='40', crossed=False),
+    "50_zone_beginn": StreetMarking(marker_image=None, marker_text='50', crossed=False),
+    "60_zone_beginn": StreetMarking(marker_image=None, marker_text='60', crossed=False),
+    "70_zone_beginn": StreetMarking(marker_image=None, marker_text='70', crossed=False),
+    "80_zone_beginn": StreetMarking(marker_image=None, marker_text='80', crossed=False),
+    "90_zone_beginn": StreetMarking(marker_image=None, marker_text='90', crossed=False),
+    "ende_10_zone": StreetMarking(marker_image=None, marker_text='10', crossed=True),
+    "ende_20_zone": StreetMarking(marker_image=None, marker_text='20', crossed=True),
+    "stvo-274.2": StreetMarking(marker_image=None, marker_text='30', crossed=True),
+    "ende_40_zone": StreetMarking(marker_image=None, marker_text='40', crossed=True),
+    "ende_50_zone": StreetMarking(marker_image=None, marker_text='50', crossed=True),
+    "ende_60_zone": StreetMarking(marker_image=None, marker_text='60', crossed=True),
+    "ende_70_zone": StreetMarking(marker_image=None, marker_text='70', crossed=True),
+    "ende_80_zone": StreetMarking(marker_image=None, marker_text='80', crossed=True),
+    "ende_90_zone": StreetMarking(marker_image=None, marker_text='90', crossed=True),
+    "turn_left": StreetMarking(marker_image=MarkerImage.TURN_LEFT, marker_text=None, crossed=False),
+    "turn_right": StreetMarking(marker_image=MarkerImage.TURN_RIGHT, marker_text=None, crossed=False),
+}
+
 
 def draw_boundary(ctx, boundary):
     if boundary.lineMarking is None:
@@ -87,13 +121,6 @@ def draw_island_junction(ctx, island):
     ctx.stroke()
     ctx.restore()
 
-def text_extent(font, font_size, text, *args, **kwargs):
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
-    ctx = cairo.Context(surface)
-    ctx.select_font_face(font, *args, **kwargs)
-    ctx.set_font_size(font_size)
-    return ctx.text_extents(text)
-
 def draw_road_marking(ctx, marking):
     ctx.save()
     ctx.set_dash([])
@@ -101,18 +128,36 @@ def draw_road_marking(ctx, marking):
     font_size = 0.4
     text = '30'
     font_args = [cairo.FONT_SLANT_NORMAL]
-    (x_bearing, y_bearing, text_width, text_height,
-     x_advance, y_advance) = text_extent(font, font_size, text, *font_args)
-    print(marking.orientation)
-    ctx.move_to(marking.centerPoint.x - text_width/2, marking.centerPoint.y + text_height/2)
+    ctx.move_to(marking.centerPoint.x - 0.145*math.cos(marking.orientation),
+                marking.centerPoint.y - 0.145*math.sin(marking.orientation))
+    marking_visual = ROADMARKING_TYPE_TO_VISUAL[marking.type]
     ctx.rotate(marking.orientation)
     ctx.select_font_face(font, *font_args)
     ctx.set_font_size(font_size)
-    ctx.text_path(text)
+    ctx.text_path(marking_visual.marker_text)
     ctx.set_line_width(0.01)
-    # ctx.fill_preserve()
+    (x_bearing, y_bearing, text_width, text_height,
+     x_advance, y_advance) = ctx.text_extents(text)
+    ctx.fill_preserve()
     ctx.stroke()
     ctx.restore()
+    if marking_visual.crossed:
+        ctx.save()
+        ctx.move_to(marking.centerPoint.x + 0.145 * math.cos(marking.orientation),
+                    marking.centerPoint.y + 0.145 * math.sin(marking.orientation))
+        ctx.line_to(marking.centerPoint.x + 0.145 * math.cos(marking.orientation)
+                    - text_height * math.cos(marking.orientation) + text_width * math.sin(marking.orientation),
+                    marking.centerPoint.y + 0.145 * math.sin(marking.orientation)
+                    - text_height * math.sin(marking.orientation) - text_width * math.cos(marking.orientation))
+        ctx.move_to(marking.centerPoint.x + (0.145 - text_height) * math.cos(marking.orientation),
+                    marking.centerPoint.y + (0.145 - text_height) * math.sin(marking.orientation))
+        ctx.line_to(marking.centerPoint.x + 0.145 * math.cos(marking.orientation)
+                    + text_width * math.sin(marking.orientation),
+                    marking.centerPoint.y + 0.145 * math.sin(marking.orientation)
+                    - text_width * math.cos(marking.orientation))
+        ctx.set_line_width(0.05)
+        ctx.stroke()
+        ctx.restore()
 
 def draw_stripes_rect(ctx, rectangle):
     ctx.save()
