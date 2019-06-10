@@ -12,6 +12,9 @@ SCHEMA = etree.XMLSchema(etree.parse(pkg_resources.resource_stream(
 class Config:
     def __init__(self):
         self.road_width = 0.4
+        # TODO: move this to an enum in the generated pyxb schema
+        self.turn_road_marking_width = 0.072
+
 
 def main():
     parser = argparse.ArgumentParser(

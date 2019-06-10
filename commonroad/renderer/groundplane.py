@@ -1,5 +1,6 @@
-#import cairo
-import cairocffi as cairo
+import cairo
+# have to use pycairo instead of cairocffi as Rsvg bindings don't work with the latter
+#import cairocffi as cairo
 import math
 from commonroad import utils
 from os import path
@@ -9,6 +10,9 @@ from tqdm import tqdm
 import numpy as np
 from enum import Enum
 from collections import namedtuple
+import gi
+gi.require_version('Rsvg', '2.0')
+from gi.repository import Rsvg
 
 PIXEL_PER_UNIT = 500
 TILE_SIZE = 2048
@@ -16,8 +20,8 @@ PADDING = 3
 
 
 class MarkerImage(Enum):
-    TURN_LEFT = "turn_left.png"
-    TURN_RIGHT = "turn_right.png"
+    TURN_LEFT = 'commonroad/renderer/street_markings/Fahrbahnmarkierung_Pfeil_L.svg'
+    TURN_RIGHT = 'commonroad/renderer/street_markings/Fahrbahnmarkierung_Pfeil_R.svg'
 
 StreetMarking = namedtuple('StreetMarking', ['marker_image', 'marker_text', 'crossed'])
 
@@ -122,25 +126,26 @@ def draw_island_junction(ctx, island):
     ctx.restore()
 
 def draw_road_marking(ctx, marking):
-    ctx.save()
-    ctx.set_dash([])
-    font = "DIN 1451 Engschrift"
-    font_size = 0.4
-    text = '30'
-    font_args = [cairo.FONT_SLANT_NORMAL]
-    ctx.move_to(marking.centerPoint.x - 0.145*math.cos(marking.orientation),
-                marking.centerPoint.y - 0.145*math.sin(marking.orientation))
     marking_visual = ROADMARKING_TYPE_TO_VISUAL[marking.type]
-    ctx.rotate(marking.orientation)
-    ctx.select_font_face(font, *font_args)
-    ctx.set_font_size(font_size)
-    ctx.text_path(marking_visual.marker_text)
-    ctx.set_line_width(0.01)
-    (x_bearing, y_bearing, text_width, text_height,
-     x_advance, y_advance) = ctx.text_extents(text)
-    ctx.fill_preserve()
-    ctx.stroke()
-    ctx.restore()
+    if marking_visual.marker_text:
+        ctx.save()
+        ctx.set_dash([])
+        font = "DIN 1451 Std"
+        font_size = 0.4
+        text = '30'
+        font_args = [cairo.FONT_SLANT_NORMAL]
+        ctx.move_to(marking.centerPoint.x - 0.145*math.cos(marking.orientation),
+                    marking.centerPoint.y - 0.145*math.sin(marking.orientation))
+        ctx.rotate(marking.orientation)
+        ctx.select_font_face(font, *font_args)
+        ctx.set_font_size(font_size)
+        ctx.text_path(marking_visual.marker_text)
+        ctx.set_line_width(0.01)
+        (x_bearing, y_bearing, text_width, text_height,
+         x_advance, y_advance) = ctx.text_extents(text)
+        ctx.fill_preserve()
+        ctx.stroke()
+        ctx.restore()
     if marking_visual.crossed:
         ctx.save()
         ctx.move_to(marking.centerPoint.x + 0.145 * math.cos(marking.orientation),
@@ -158,6 +163,17 @@ def draw_road_marking(ctx, marking):
         ctx.set_line_width(0.05)
         ctx.stroke()
         ctx.restore()
+
+    if marking_visual.marker_image:
+        ctx.save()
+        handle = Rsvg.Handle()
+        svg = handle.new_from_file(marking_visual.marker_image.value)
+        ctx.translate(marking.centerPoint.x, marking.centerPoint.y)
+        ctx.rotate(marking.orientation)
+        ctx.scale(0.001, 0.001)
+        svg.render_cairo(ctx)
+        ctx.restore()
+
 
 def draw_stripes_rect(ctx, rectangle):
     ctx.save()

@@ -201,7 +201,6 @@ class TransrotPrimitive(Primitive):
                 y = obj.centerPoint.y
                 transformed = self._transform_point([x, y])
                 obj.orientation += self._angle
-                print('ADDING ROAD MARKING, Orientation of roadMarking', obj.orientation)
                 obj.centerPoint = schema.point(x=transformed[0], y=transformed[1])
         return export
 
@@ -508,7 +507,19 @@ class Intersection(Primitive):
             pairs.append((westLeft, westRight))
             result.append(schema.trafficSign(type="stvo-209-10",
                 orientation=math.pi*1.5, centerPoint=schema.point(
-                x=config.road_width + 0.1, y= -config.road_width - 0.25)))
+                x=config.road_width + 0.1, y=-config.road_width - 0.25)))
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
+                                             orientation=math.pi,
+                                             centerPoint=schema.point(x=(config.road_width +
+                                                                         config.turn_road_marking_width) * 0.5,
+                                                                      y=-config.road_width - 0.25)
+                                             ))
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
+                                             orientation=math.pi * 0.5,
+                                             centerPoint=schema.point(x=-config.road_width - 0.25,
+                                                                      y=-(config.road_width +
+                                                                         config.turn_road_marking_width) * 0.5)
+                                             ))
         elif self._target_dir == "right":
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.leftBoundary.lineMarking = "dashed"
@@ -530,7 +541,18 @@ class Intersection(Primitive):
             pairs.append((eastLeft, eastRight))
             result.append(schema.trafficSign(type="stvo-209-20",
                 orientation=math.pi*1.5, centerPoint=schema.point(
-                x=config.road_width + 0.1, y= -config.road_width - 0.25)))
+                x=config.road_width + 0.1, y=-config.road_width - 0.25)))
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
+                                             orientation=math.pi,
+                                             centerPoint=schema.point(x=(config.road_width +
+                                                                         config.turn_road_marking_width) * 0.5,
+                                                                      y=-config.road_width - 0.25)))
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
+                                             orientation=math.pi * 1.5,
+                                             centerPoint=schema.point(x=config.road_width + 0.25,
+                                                                      y=(config.road_width +
+                                                                         config.turn_road_marking_width) * 0.5)
+                                             ))
         elif self._target_dir == "straight":
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.rightBoundary.point.append(schema.point(x=config.road_width, y=-config.road_width))
@@ -671,11 +693,7 @@ class TrafficSign(StraightLine):
         export = super().export(config)
         export.objects.append(traffic_sign)
 
-        print(schema.STD_ANON.iteritems())
-        print('Traffic sign ', self._traffic_sign, type(self._traffic_sign), type(schema.STD_ANON.items()[0]), str(schema.STD_ANON.items()[0]))
-        print([str(item)[1:-1] for item in schema.roadMarkingType.iteritems()])
         if self._traffic_sign in [str(item)[1:-1] for item in schema.roadMarkingType.items()]:
-            print('Adding item', self._traffic_sign)
             road_marking = schema.roadMarking(type=schema.roadMarkingType(self._traffic_sign), orientation=-math.pi/2,
                                               centerPoint=schema.point(x=self._length / 2, y=-config.road_width/2))
             export.objects.append(road_marking)
@@ -683,7 +701,6 @@ class TrafficSign(StraightLine):
 
 class Ramp(StraightLine):
     def __init__(self, args):
-        print('GOT A RAMP')
         self._signDistance = float(args["signDistance"])
         self._padding = 0.4
         # length of current ramp .DAE + the signs we put around
@@ -735,7 +752,6 @@ def quad_bezier_line_function(t, p0, p1, p2, p3, A, d):
 
 class TrafficIsland(Primitive):
     def __init__(self, args):
-        print('ADDING TRAFFIC ISLAND')
         self._islandWidth = float(args["islandWidth"])
         self._zebraLength = float(args["zebraLength"])
         self._signDistance = float(args["signDistance"])
