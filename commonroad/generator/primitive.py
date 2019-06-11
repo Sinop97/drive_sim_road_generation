@@ -487,7 +487,6 @@ class Intersection(Primitive):
         pairs = [(southRight, southLeft)]
 
         if self._target_dir == "left":
-            print('Target dir: left ', self._target_dir, ' rule ', self._rule)
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.rightBoundary.lineMarking = "dashed"
             right_lanelet.leftBoundary.lineMarking = "dashed"
@@ -526,7 +525,6 @@ class Intersection(Primitive):
                                                  orientation=math.pi, centerPoint=schema.point(
                                                  x=-config.road_width - 0.25, y=-config.road_width - 0.1)))
         elif self._target_dir == "right":
-            print('Target dir right : ', self._target_dir, ' rule ', self._rule)
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.leftBoundary.lineMarking = "dashed"
             for angle in np.arange(math.pi, math.pi/2, -math.pi/20):

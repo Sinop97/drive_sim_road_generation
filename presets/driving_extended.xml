@@ -29,6 +29,11 @@
                     <trafficSign type="stvo-274.2" />
                 </case>
                 <case w="1">
+                    <trafficSign type="10_zone_beginn" />
+                    <line length="1" />
+                    <trafficSign type="ende_10_zone" />
+                </case>
+                <case w="1">
                     <!-- static obstacles -->
                     <repeat min="1" max="5">
                         <select>
