@@ -514,12 +514,13 @@ class Intersection(Primitive):
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)
                                              ))
-            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
-                                             orientation=math.pi * 0.5,
-                                             centerPoint=schema.point(x=-config.road_width - 0.25,
-                                                                      y=-(config.road_width +
-                                                                         config.turn_road_marking_width) * 0.5)
-                                             ))
+            if self._rule == 'priority-yield':
+                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
+                                                 orientation=math.pi * 0.5,
+                                                 centerPoint=schema.point(x=-config.road_width - 0.25,
+                                                                          y=-(config.road_width +
+                                                                             config.turn_road_marking_width) * 0.5)
+                                                 ))
         elif self._target_dir == "right":
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.leftBoundary.lineMarking = "dashed"
@@ -547,12 +548,13 @@ class Intersection(Primitive):
                                              centerPoint=schema.point(x=(config.road_width +
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)))
-            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
-                                             orientation=math.pi * 1.5,
-                                             centerPoint=schema.point(x=config.road_width + 0.25,
-                                                                      y=(config.road_width +
-                                                                         config.turn_road_marking_width) * 0.5)
-                                             ))
+            if self._rule == 'priority-yield':
+                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
+                                                 orientation=math.pi * 1.5,
+                                                 centerPoint=schema.point(x=config.road_width + 0.25,
+                                                                          y=(config.road_width +
+                                                                             config.turn_road_marking_width) * 0.5)
+                                                 ))
         elif self._target_dir == "straight":
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.rightBoundary.point.append(schema.point(x=config.road_width, y=-config.road_width))
@@ -684,11 +686,20 @@ class TrafficSign(StraightLine):
     def __init__(self, args):
         super().__init__(dict(length=0.01))
         self._traffic_sign = args["type"]
+        self._on_opposite_side = False
+        if "on_opposite_side" in args:
+            self._on_opposite_side = args["on_opposite_side"]
 
     def export(self, config):
-        traffic_sign = schema.trafficSign(type=self._traffic_sign,
-            orientation=math.pi, centerPoint=schema.point(x=self._length / 2,
-            y=-config.road_width - 0.15))
+        if self._on_opposite_side:
+            print('Planting ', self._traffic_sign, ' on opposite side')
+            traffic_sign = schema.trafficSign(type=self._traffic_sign,
+                orientation=0.0, centerPoint=schema.point(x=self._length / 2,
+                y=config.road_width + 0.15))
+        else:
+            traffic_sign = schema.trafficSign(type=self._traffic_sign,
+                orientation=math.pi, centerPoint=schema.point(x=self._length / 2,
+                y=-config.road_width - 0.15))
 
         export = super().export(config)
         export.objects.append(traffic_sign)

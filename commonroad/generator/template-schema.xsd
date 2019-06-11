@@ -123,6 +123,7 @@
 
     <xs:complexType name="trafficSign">
         <xs:attribute name="type" type="trafficSignType" use="required" />
+        <xs:attribute name="on_opposite_side" type="xs:boolean" default="false" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="ramp">

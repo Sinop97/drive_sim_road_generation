@@ -14,6 +14,8 @@
                                 <trafficSign type="stvo-350-10" />
                                 <line length="0.4" />
                                 <zebraCrossing length="0.4" />
+                                <line length="0.4" />
+                                <trafficSign type="stvo-350-10" on_opposite_side="true"/>
                             </case>
                             <case w="1">
                                 <trafficSign type="stvo-208" />
@@ -23,7 +25,6 @@
                         </select>
                         <line length="1" />
                     </repeat>
-
                     <line length="1" />
                     <trafficSign type="stvo-274.2" />
                 </case>
