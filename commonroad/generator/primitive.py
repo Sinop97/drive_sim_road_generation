@@ -487,6 +487,7 @@ class Intersection(Primitive):
         pairs = [(southRight, southLeft)]
 
         if self._target_dir == "left":
+            print('Target dir: left ', self._target_dir, ' rule ', self._rule)
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.rightBoundary.lineMarking = "dashed"
             right_lanelet.leftBoundary.lineMarking = "dashed"
@@ -514,14 +515,18 @@ class Intersection(Primitive):
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)
                                              ))
-            if self._rule == 'priority-yield':
+            if self._rule != 'yield':
                 result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
                                                  orientation=math.pi * 0.5,
                                                  centerPoint=schema.point(x=-config.road_width - 0.25,
                                                                           y=-(config.road_width +
                                                                              config.turn_road_marking_width) * 0.5)
                                                  ))
+                result.append(schema.trafficSign(type="stvo-209-20",
+                                                 orientation=math.pi, centerPoint=schema.point(
+                                                 x=-config.road_width - 0.25, y=-config.road_width - 0.1)))
         elif self._target_dir == "right":
+            print('Target dir right : ', self._target_dir, ' rule ', self._rule)
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.leftBoundary.lineMarking = "dashed"
             for angle in np.arange(math.pi, math.pi/2, -math.pi/20):
@@ -548,13 +553,16 @@ class Intersection(Primitive):
                                              centerPoint=schema.point(x=(config.road_width +
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)))
-            if self._rule == 'priority-yield':
+            if self._rule != 'yield':
                 result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
                                                  orientation=math.pi * 1.5,
                                                  centerPoint=schema.point(x=config.road_width + 0.25,
                                                                           y=(config.road_width +
                                                                              config.turn_road_marking_width) * 0.5)
                                                  ))
+                result.append(schema.trafficSign(type="stvo-209-10",
+                                                 orientation=0, centerPoint=schema.point(
+                                                 x=config.road_width + 0.25, y=config.road_width + 0.1)))
         elif self._target_dir == "straight":
             right_lanelet = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
             right_lanelet.rightBoundary.point.append(schema.point(x=config.road_width, y=-config.road_width))
@@ -577,6 +585,21 @@ class Intersection(Primitive):
             result.append(schema.trafficSign(type=type_map[self._rule],
                 orientation=math.pi*1.5, centerPoint=schema.point(
                 x=config.road_width + 0.1, y= -config.road_width - 0.5)))
+            result.append(schema.trafficSign(type=type_map[self._rule],
+                orientation=math.pi*0.5, centerPoint=schema.point(
+                x=-config.road_width - 0.1, y= config.road_width + 0.5)))
+
+        # stop, right of way, right of way, right of way
+        # todo: also add turning signal if we are not on the outer turn lane on the opposite side
+        type_map_opposite = {"priority-yield":"stvo-206", "priority-stop":"stvo-306",
+            "yield":"stvo-306", "stop":"stvo-306"}
+        if self._rule in type_map:
+            result.append(schema.trafficSign(type=type_map_opposite[self._rule],
+                orientation=0, centerPoint=schema.point(
+                y=config.road_width + 0.1, x= config.road_width + 0.5)))
+            result.append(schema.trafficSign(type=type_map_opposite[self._rule],
+                orientation=math.pi, centerPoint=schema.point(
+                y=-config.road_width - 0.1, x= -config.road_width - 0.5)))
 
         return Export(result, pairs)
 
@@ -692,7 +715,6 @@ class TrafficSign(StraightLine):
 
     def export(self, config):
         if self._on_opposite_side:
-            print('Planting ', self._traffic_sign, ' on opposite side')
             traffic_sign = schema.trafficSign(type=self._traffic_sign,
                 orientation=0.0, centerPoint=schema.point(x=self._length / 2,
                 y=config.road_width + 0.15))

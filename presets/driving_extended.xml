@@ -62,6 +62,9 @@
                     <intersection turn="left" rule="yield" />
                 </case>
                 <case w="0.5">
+                    <intersection turn="left" rule="priority-stop" />
+                </case>
+                <case w="0.5">
                     <intersection turn="straight" rule="priority-stop" />
                 </case>
                 <case w="0.5">
