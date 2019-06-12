@@ -134,9 +134,12 @@ def draw_road_marking(ctx, marking):
         font_size = 0.4
         text = '30'
         font_args = [cairo.FONT_SLANT_NORMAL]
-        ctx.move_to(marking.centerPoint.x - 0.145*math.cos(marking.orientation),
-                    marking.centerPoint.y - 0.145*math.sin(marking.orientation))
+        ctx.translate(marking.centerPoint.x, #- 0.145*math.cos(marking.orientation),
+                      marking.centerPoint.y) #- 0.145*math.sin(marking.orientation))
         ctx.rotate(marking.orientation)
+        # mirror text
+        ctx.transform(cairo.Matrix(1.0, 0, 0, -1, 0, 0))
+        ctx.translate(-0.145, 0.29)
         ctx.select_font_face(font, *font_args)
         ctx.set_font_size(font_size)
         ctx.text_path(marking_visual.marker_text)

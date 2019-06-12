@@ -79,6 +79,12 @@
 
             <select>
                 <case w="1">
+                    <line length="1" />
+                    <trafficSign type="50_zone_beginn" />
+                    <line length="2" />
+                    <trafficSign type="ende_50_zone" />
+                </case>
+                <case w="1">
                     <line length="2" />
                 </case>
                 <case w="1">
