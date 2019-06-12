@@ -451,6 +451,7 @@ def ground_plane_model(x, y, tile_size, name, material):
               <uri>file://materials/textures</uri>
               <name>{material}</name>
             </script>
+            <specular>1 1 1 1</specular>
           </material>
         </visual>
         <self_collide>0</self_collide>

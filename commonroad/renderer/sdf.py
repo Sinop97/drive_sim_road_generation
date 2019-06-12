@@ -24,6 +24,8 @@ def generate_sdf(xml_content, target_dir, add_vehicle):
     with open(path.join(target_dir, "worlds", "world.sdf"), "w+") as file:
         file.write("<sdf version='1.6'><world name='default'>")
         file.write(sun_light())
+        file.write(spot_light(pose=[0, 0, 0.2, 0, 0, 0], idx=0))
+        file.write(sky())
         file.write(content)
         file.write("</world></sdf>")
 
@@ -43,3 +45,61 @@ def sun_light():
       <cast_shadows>1</cast_shadows>
     </light>
     """
+
+def spot_light(pose, idx):
+    return """
+    <light name='spot_{idx}' type='spot'>
+      <cast_shadows>true</cast_shadows>
+      <pose frame=''>{x} {y} {z} {r} {p} {yaw}</pose>
+      <diffuse>1.0 1.0 1.0 1</diffuse>
+      <specular>1.0 1.0 1.0 1</specular>
+      <direction>0.1 0.1 -0.9</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0.4</inner_angle>
+        <outer_angle>1.0</outer_angle>
+        <falloff>3.0</falloff>
+      </spot>
+    </light>
+    """.format(idx=idx, x=pose[0], y=pose[1], z=pose[2], r=pose[3], p=pose[4], yaw=pose[4])
+
+def sky():
+    return """
+<rendering:ogre>
+<ambient>0.5 0.5 0.5 0.5</ambient>
+<sky>
+          <material>
+            <script>
+              <uri>file://materials/scripts</uri>
+              <uri>file://materials/textures</uri>
+              <name>circus_arena_2k.hdr</name>
+            </script>
+            <specular>0 0 0 0</specular>
+          </material>
+          </sky>
+<grid>false</grid>
+<maxUpdateRate>10.</maxUpdateRate>
+<shadowTechnique>none</shadowTechnique>
+<shadows>false</shadows>
+
+</rendering:ogre>
+    """
+    # return """
+    # <scene>
+    #     <sky>
+    #       <material>
+    #         <script>
+    #           <uri>file://materials/scripts</uri>
+    #           <uri>file://materials/textures</uri>
+    #           <name>circus_arena_2k.hdr</name>
+    #         </script>
+    #         <specular>0 0 0 0</specular>
+    #       </material>
+    #     </sky>
+    # </scene>
+    # """

@@ -83,6 +83,7 @@
                     <trafficSign type="50_zone_beginn" />
                     <line length="2" />
                     <trafficSign type="ende_50_zone" />
+                    <line length="1" />
                 </case>
                 <case w="1">
                     <line length="2" />
