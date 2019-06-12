@@ -24,6 +24,8 @@ make
 export GAZEBO_PLUGIN_PATH=`pwd`:$GAZEBO_PLUGIN_PATH
 ```
 
+Additionally, install the font located in the commonroad/renderer/fonts subfolder, which is needed to draw speed limit numbers.
+
 ## Usage
 Generate a random scenario in CommonRoad XML from Template XML:
 
