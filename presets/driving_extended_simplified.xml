@@ -1,0 +1,51 @@
+<template>
+    <sequence>
+        <line length="1" isStart="true" />
+        <repeat min="2" max="3">
+            <select>
+                <case w="0.5">
+                    <line length="1" />
+                    <leftArc radius="1.4" angle="45" />
+                    <intersection turn="left" rule="yield" />
+                </case>
+                <case w="0.5">
+                    <line length="1" />
+                    <leftArc radius="1.4" angle="45" />
+                    <intersection turn="left" rule="priority-stop" />
+                </case>
+                <case w="0.5">
+                    <line length="1" />
+                    <leftArc radius="1.4" angle="45" />
+                    <intersection turn="straight" rule="priority-stop" />
+                </case>
+                <case w="0.5">
+                    <line length="1" />
+                    <leftArc radius="1.4" angle="45" />
+                    <intersection turn="right" rule="stop" />
+                </case>
+            </select>
+
+            <select>
+                <case w="1">
+                    <line length="1" />
+                    <trafficSign type="50_zone_beginn" />
+                    <line length="2" />
+                    <trafficSign type="ende_50_zone" />
+                    <line length="1" />
+                </case>
+                <case w="1">
+                    <line length="2" />
+                </case>
+                <case w="1">
+                    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+                </case>
+                <case w="1">
+                    <leftArc radius="1.4" angle="45" />
+                </case>
+                <case w="1">
+                    <rightArc radius="1.4" angle="45" />
+                </case>
+            </select>
+        </repeat>
+    </sequence>
+</template>
