@@ -17,6 +17,3 @@ def generate_blend(xml_content, target_dir, add_vehicle):
         traffic_sign.draw(sign, target_dir)
     for ramp in doc.ramp:
         special_objects.draw_ramp(ramp.centerPoint.x, ramp.centerPoint.y, ramp.orientation, ramp.id)
-
-    if not path.exists(path.join(target_dir, "worlds")):
-        makedirs(path.join(target_dir, "worlds"))
