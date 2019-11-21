@@ -10,6 +10,7 @@ OUTPUT_DIR = 'blender-output'
 FORCE_OUTPUT = True
 ADD_VEHICLE = True
 INPUT_FILE = 'driving-scenario.xml'
+GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'
 
 if __name__ == "__main__":
     # parser = argparse.ArgumentParser(
@@ -30,4 +31,4 @@ if __name__ == "__main__":
     with open(INPUT_FILE) as input_file:
         xml = input_file.read()
 
-    generate_blend(xml, OUTPUT_DIR, ADD_VEHICLE)
+    generate_blend(xml, OUTPUT_DIR, ADD_VEHICLE, OUTPUT_DIR, GAZEBO_WORLDS_PATH)

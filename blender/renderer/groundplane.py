@@ -33,11 +33,10 @@ def add_ground_segment(texture_file, x, y, segment_scale, segment_name):
     bpy.ops.mesh.primitive_plane_add(location=(x, y, 0))
     bpy.context.active_object.name = segment_name
     obj = bpy.data.objects[segment_name]
-    obj.scale[0] = segment_scale
-    obj.scale[1] = segment_scale
+    obj.scale[0] = segment_scale/2
+    obj.scale[1] = segment_scale/2
 
     bpy.data.textures.new(segment_name, type='IMAGE')
-    #print([image.name for image in bpy.data.images])
     bpy.data.textures[segment_name].image = bpy.data.images[os.path.basename(texture_file)]
     bpy.data.materials.new(segment_name)
     mat = bpy.data.materials[segment_name]

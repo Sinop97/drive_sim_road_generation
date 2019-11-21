@@ -1,24 +1,20 @@
 import bpy
 
+
+def obstacle_model(name, center_x, center_y, length, width, height, orientation):
+    bpy.ops.mesh.primitive_cube_add()
+    bpy.context.active_object.name = name
+    obj = bpy.data.objects[name]
+    obj.location = (center_x, center_y, 0)
+    obj.scale[0] = length/2
+    obj.scale[1] = width/2
+    obj.scale[2] = height/2
+    obj.rotation_euler = [0, 0, orientation]
+
+
 def draw(obst):
-    raise NotImplementedError()
-    bpy.data.images.load(texture_file)
-
-    bpy.ops.mesh.primitive_plane_add(location=(x, y, 0))
-    bpy.context.active_object.name = segment_name
-    obj = bpy.data.objects[segment_name]
-    obj.scale[0] = segment_scale
-    obj.scale[1] = segment_scale
-
-    bpy.data.textures.new(segment_name, type='IMAGE')
-    bpy.data.textures[segment_name].image = bpy.data.images[os.path.basename(texture_file)]
-    bpy.data.materials.new(segment_name)
-    mat = bpy.data.materials[segment_name]
-    slot = mat.texture_slots.add()
-    slot.texture = bpy.data.textures[segment_name]
-    slot.use_map_normal = True
-    slot.texture_coords = 'ORCO'
-
-    obj.data.materials.append(mat)
-
-    print("Added obstacle {}".format(segment_name))
+    for idx, rect in enumerate(obst.shape.rectangle):
+        print('Added obstacle')
+        obstacle_model("Obstacle/{0}/{1}".format(obst.id, idx),
+                       rect.centerPoint.x, rect.centerPoint.y, rect.length,
+                       rect.width, 0.2, - rect.orientation)

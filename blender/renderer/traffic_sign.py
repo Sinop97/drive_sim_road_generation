@@ -1,24 +1,19 @@
 import bpy
+from commonroad.renderer.traffic_sign import SIGN_MESHES
+import os
 
-def draw(obst):
-    raise NotImplementedError()
-    bpy.data.images.load(texture_file)
 
-    bpy.ops.mesh.primitive_plane_add(location=(x, y, 0))
-    bpy.context.active_object.name = segment_name
-    obj = bpy.data.objects[segment_name]
-    obj.scale[0] = segment_scale
-    obj.scale[1] = segment_scale
+def draw(sign, sign_mesh_path):
+    bpy.ops.wm.collada_import(filepath=os.path.join(sign_mesh_path,
+                                                    SIGN_MESHES[sign.type]['mesh'] + '.dae'))
+    bpy.ops.object.join()
+    sign_name = 'Sign/{}_{}'.format(sign.type, sign.id)
+    bpy.context.active_object.name = sign_name
+    obj = bpy.data.objects[sign_name]
 
-    bpy.data.textures.new(segment_name, type='IMAGE')
-    bpy.data.textures[segment_name].image = bpy.data.images[os.path.basename(texture_file)]
-    bpy.data.materials.new(segment_name)
-    mat = bpy.data.materials[segment_name]
-    slot = mat.texture_slots.add()
-    slot.texture = bpy.data.textures[segment_name]
-    slot.use_map_normal = True
-    slot.texture_coords = 'ORCO'
-
-    obj.data.materials.append(mat)
-
-    print("Added obstacle {}".format(segment_name))
+    obj.location = (sign.centerPoint.x, sign.centerPoint.y, 0)
+    obj.rotation_euler = [0, 0, sign.orientation]
+    obj.scale[0] = 0.001
+    obj.scale[1] = 0.001
+    obj.scale[2] = 0.001
+    print('Added traffic sign')
