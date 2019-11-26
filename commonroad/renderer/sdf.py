@@ -11,7 +11,7 @@ def generate_sdf(xml_content, target_dir, add_vehicle):
     if add_vehicle:
         content += ego_vehicle.draw(target_dir, doc.lanelet)
     for obst in doc.obstacle:
-        if obst.type != "blockedArea":
+        if obst.type != "blockedArea" and obst.type != "segmentationIntersection":
             content += obstacle.draw(obst)
     for sign in doc.trafficSign:
         content += traffic_sign.draw(sign, target_dir)

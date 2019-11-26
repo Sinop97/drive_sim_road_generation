@@ -4,4 +4,5 @@ keyframe_plugin/build
 keyframe_plugin/CMakeLists.txt.user
 world/
 driving-scenario.xml
+blender-output
 .idea

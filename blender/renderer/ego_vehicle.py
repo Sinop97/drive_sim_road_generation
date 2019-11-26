@@ -1,14 +1,20 @@
 import bpy
 import os
 import math
+from blender.renderer.segmentation_colormap import EGO_VEHICLE_COLOR
+from blender.renderer.utils import duplicate_add_segmentation
 
 
-def draw():
-    model_file = 'car-cc2017.dae'
-    model_path = os.path.join('commonroad', 'renderer', 'models', model_file)
+def draw(gazebo_sim_path, scene_rgb, scene_seg):
+    model_file = 'hull.dae'
+    model_path = os.path.join(gazebo_sim_path, model_file)
     bpy.ops.wm.collada_import(filepath=model_path)
 
-    bpy.ops.transform.rotate(value=-math.pi/2, axis=(1, 0, 0), constraint_axis=(True, False, False),
-                             constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED',
-                             proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True,
-                             use_accurate=False)
+    ego_vehicle_name = 'ego_vehicle'
+    bpy.context.active_object.name = ego_vehicle_name
+    ego_vehicle = bpy.data.objects[ego_vehicle_name]
+    ego_vehicle.rotation_euler = (0, 0, math.pi)
+    scene_rgb.objects.link(ego_vehicle)
+
+    duplicate_add_segmentation('seg-' + ego_vehicle_name, EGO_VEHICLE_COLOR, scene_seg)
+    return ego_vehicle_name

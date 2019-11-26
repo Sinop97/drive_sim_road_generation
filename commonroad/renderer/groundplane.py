@@ -88,8 +88,9 @@ def draw_stop_line(ctx, lanelet):
         ctx.stroke()
     ctx.restore()
 
-def draw_rectangle(ctx, rectangle):
+def draw_rectangle(ctx, rectangle, color=(1.0, 1.0, 1.0)):
     ctx.save()
+    ctx.set_source_rgb(*color)
     ctx.translate(rectangle.centerPoint.x, rectangle.centerPoint.y)
     ctx.rotate(-rectangle.orientation)
     ctx.rectangle(- rectangle.length / 2, - rectangle.width / 2,
@@ -251,15 +252,20 @@ def boundary_to_equi_distant(boundary, step_width, offset):
     yinterp = np.interp(eval_marks, lengths, y)
     return map(lambda i: (i[0],i[1]), zip(xinterp, yinterp))
 
-def draw_obstacle(ctx, obstacle):
+def draw_obstacle(ctx, obstacle, color=(1.0, 1.0, 1,0)):
     if obstacle.type == "blockedArea":
         for rect in obstacle.shape.rectangle:
             draw_stripes_rect(ctx, rect)
+    # elif obstacle.type == "segmentationIntersection":
+    #     for rect in obstacle.shape.rectangle:
+    #         draw_rectangle(ctx, rect, color)
     # uncomment if you want white boxes under the obstacles
     #else:
     #    draw_shape(ctx, obstacle.shape)
 
-def draw_all_boundaries(ctx, lanelet_list, boundary_name):
+
+def draw_all_boundaries(ctx, lanelet_list, boundary_name, color=(1, 1, 1)):
+    ctx.set_source_rgb(*color)
     all_ids = [lanelet.id for lanelet in lanelet_list
         if getattr(lanelet, boundary_name).lineMarking is not None]
     while len(all_ids) > 0:
@@ -296,7 +302,7 @@ def get_lanelet_by_id(lanelet_list, id):
             return lanelet
     return None
 
-def expand_boundary(lanelet_list, lanelet, boundary_name, direction):
+def expand_boundary(lanelet_list, lanelet, boundary_name, direction, ignore_boundary=False):
     ids = []
     original_line_type = getattr(lanelet, boundary_name).lineMarking
     found = True
@@ -305,7 +311,7 @@ def expand_boundary(lanelet_list, lanelet, boundary_name, direction):
         if getattr(lanelet, direction) is not None:
             for next in getattr(lanelet, direction).lanelet:
                 next_lanelet = get_lanelet_by_id(lanelet_list, next.ref)
-                if getattr(next_lanelet, boundary_name).lineMarking == original_line_type:
+                if getattr(next_lanelet, boundary_name).lineMarking == original_line_type or ignore_boundary:
                     lanelet = next_lanelet
                     ids.append(lanelet.id)
                     found = True

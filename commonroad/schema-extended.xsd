@@ -172,6 +172,7 @@
             <xs:enumeration value="pedestrian" />
             <xs:enumeration value="priorityVehicle" />
             <!-- EXTENSION -->
+            <xs:enumeration value="segmentationIntersection" />
             <xs:enumeration value="blockedArea" />
         </xs:restriction>
     </xs:simpleType>

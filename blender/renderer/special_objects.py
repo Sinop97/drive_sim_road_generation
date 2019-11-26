@@ -1,8 +1,10 @@
 import bpy
 import os
+from blender.renderer.segmentation_colormap import RAMP_COLOR
+from blender.renderer.utils import duplicate_add_segmentation
 
 
-def draw_ramp(ramp, mesh_path):
+def draw_ramp(ramp, mesh_path, scene_rgb, scene_seg):
     bpy.ops.wm.collada_import(filepath=os.path.join(mesh_path, 'Ramp.dae'))
     ramp_name = 'Ramp/{}'.format(ramp.id)
     bpy.context.active_object.name = ramp_name
@@ -13,4 +15,7 @@ def draw_ramp(ramp, mesh_path):
     obj.scale[0] = 0.001
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
-    print('Added ramp')
+    scene_rgb.objects.link(obj)
+
+    duplicate_add_segmentation("Seg-Ramp-{}".format(ramp.id), RAMP_COLOR, scene_seg)
+

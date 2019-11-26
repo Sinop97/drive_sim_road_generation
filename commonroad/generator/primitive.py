@@ -95,8 +95,8 @@ class Primitive:
             else:
                 p1 = np.array(points[i])
 
-            left = p1 + ortho_left
-            right = p1 + ortho_right
+            left = p1 + ortho_left * (1 + 1E-8)
+            right = p1 + ortho_right * (1 + 1E-8)
 
             lanelet1.leftBoundary.point.append(
                 schema.point(x=points[i][0], y=points[i][1]))
@@ -484,6 +484,13 @@ class Intersection(Primitive):
 
         result = [southRight, southLeft, northLeft, northRight,
             eastLeft, eastRight, westLeft, westRight]
+        # intersection obstacle
+        rect = schema.rectangle(length=config.road_width * 2,
+                                width=config.road_width * 2, orientation=0,
+                                centerPoint=schema.point(x=0, y=0))
+        obstacle = schema.obstacle(role="static", type="segmentationIntersection", shape=schema.shape())
+        obstacle.shape.rectangle.append(rect)
+        result.append(obstacle)
         pairs = [(southRight, southLeft)]
 
         if self._target_dir == "left":
@@ -964,6 +971,7 @@ class TrafficIsland(Primitive):
                                                                    y=zebra_end_right_center[1]))
             crossing_right.rightBoundary.point.append(schema.point(x=zebra_end_right_outer[0],
                                                                    y=zebra_end_right_outer[1]))
+            crossing_right.rightBoundary.type = ''
 
             crossing_left.type = "zebraCrossing"
             crossing_left.leftBoundary.point.append(schema.point(x=zebra_start_left_center[0],
