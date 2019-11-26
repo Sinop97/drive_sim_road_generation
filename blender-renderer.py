@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+import shutil
 # because blender does not want to have it otherwise -__-
 sys.path.append(os.getcwd())
 
@@ -20,6 +21,8 @@ if __name__ == "__main__":
         print("Output directory is not empty.")
         print("Use --force")
         sys.exit(1)
+
+    shutil.copy2(INPUT_FILE, OUTPUT_DIR)
 
     with open(INPUT_FILE) as input_file:
         xml = input_file.read()

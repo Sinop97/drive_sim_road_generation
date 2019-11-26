@@ -92,7 +92,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, add_ve
     if not os.path.isdir(os.path.join(output_path, 'semseg_color')):
         os.makedirs(os.path.join(output_path, 'semseg_color'))
 
-    for idx, keyframe in enumerate(tqdm([keyframes])):
+    for idx, keyframe in enumerate(tqdm(keyframes)):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
