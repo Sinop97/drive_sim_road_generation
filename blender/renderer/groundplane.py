@@ -170,12 +170,16 @@ def draw_blocked_area_segmentation(ctx, rectangle):
     ctx.close_path()
     ctx.fill()
     ctx.stroke()
+    ctx.restore()
 
 
 def draw_obstacle_segmentation(ctx, obstacle):
     if obstacle.type == "blockedArea":
         for rect in obstacle.shape.rectangle:
             draw_blocked_area_segmentation(ctx, rect)
+    elif obstacle.type == "segmentationIntersection":
+        for rect in obstacle.shape.rectangle:
+            draw_rectangle(ctx, rect, color=INTERSECTION_COLOR)
 
 
 def draw_road_marking_segmentation(ctx, marking):
@@ -333,7 +337,9 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
                             convert_to_one_range(LANE_MARKING_SEGMENTATION_COLOR))
 
         for obstacle in doc.obstacle:
-            draw_obstacle(ctx, obstacle)
+            if obstacle.type == "blockedArea":
+                for rect in obstacle.shape.rectangle:
+                    draw_blocked_area_segmentation(ctx, rect)
 
         # do not segment island junctions for now
         # for island_junction in doc.islandJunction:
