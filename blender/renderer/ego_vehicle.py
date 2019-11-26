@@ -7,7 +7,7 @@ from blender.renderer.utils import duplicate_add_segmentation
 
 def draw(gazebo_sim_path, scene_rgb, scene_seg):
     model_file = 'hull.dae'
-    model_path = os.path.join(gazebo_sim_path, model_file)
+    model_path = os.path.join(gazebo_sim_path, 'meshes', model_file)
     bpy.ops.wm.collada_import(filepath=model_path)
 
     ego_vehicle_name = 'ego_vehicle'

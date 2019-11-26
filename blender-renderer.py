@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 import sys
 import os
+# because blender does not want to have it otherwise -__-
 sys.path.append(os.getcwd())
 
 from blender.renderer.blender import generate_blend
-import argparse, sys, os
+import sys, os
 
-OUTPUT_DIR = 'blender-output'
-FORCE_OUTPUT = True
-ADD_VEHICLE = True
-INPUT_FILE = 'driving-scenario.xml'
-GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'
-GAZEBO_SIM_PATH = '../drive_gazebo_sim/meshes'
+OUTPUT_DIR = 'blender-output'  # output directory
+FORCE_OUTPUT = True  # overwrite output if True
+ADD_VEHICLE = True  # render ego-vehicle in the frames
+INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
+GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'  # location of the drive_gazebo_worlds package
+GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim package
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
