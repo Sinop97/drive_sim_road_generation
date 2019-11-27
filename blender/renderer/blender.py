@@ -45,6 +45,10 @@ def setup_env(scene_rgb, scene_seg, env_config=ENV_GONFIG):
     scene_seg.render.engine = 'BLENDER_RENDER'
 
     scene_rgb.render.engine = 'CYCLES'
+    scene_rgb.cycles.device = 'GPU'
+    scene_rgb.cycles.samples = 350
+    scene_rgb.cycles.preview_samples = 64
+    scene_rgb.render.layers[0].cycles.use_denoising = True
     world = bpy.data.worlds['World']
     world.use_nodes = True
     nt = world.node_tree
