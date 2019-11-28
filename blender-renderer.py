@@ -15,6 +15,11 @@ INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
 GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'  # location of the drive_gazebo_worlds package
 GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim package
 
+config = {'steps_per_lanelet': 20,
+          'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
+          'env_config': 'subway_entrance',
+          'texture_padding_ratio': 0.99}
+
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     if os.listdir(OUTPUT_DIR) != [] and not FORCE_OUTPUT:
@@ -27,4 +32,4 @@ if __name__ == "__main__":
     with open(INPUT_FILE) as input_file:
         xml = input_file.read()
 
-    generate_blend(xml, OUTPUT_DIR, ADD_VEHICLE, OUTPUT_DIR, GAZEBO_WORLDS_PATH, GAZEBO_SIM_PATH)
+    generate_blend(xml, OUTPUT_DIR, ADD_VEHICLE, OUTPUT_DIR, GAZEBO_WORLDS_PATH, GAZEBO_SIM_PATH, config)

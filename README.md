@@ -33,7 +33,9 @@ Generate a random scenario in CommonRoad XML from Template XML:
 ./road-generator.py presets/driving.xml -o driving-scenario.xml
 ```
 
-Render CommonRoad XML for Gazbeo:
+Attention: for rendering of the advanced cup track, you will need an installed "Din 1451 Std" font.
+
+Render CommonRoad XML for Gazebo:
 
 ```
 ./gazebo-renderer.py driving-scenario.xml -o world

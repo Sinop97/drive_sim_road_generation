@@ -9,16 +9,14 @@ import math
 from tqdm import tqdm
 from blender.renderer import env_configs
 
-ENV_GONFIG = env_configs.colorful_studio_back
 
-
-def get_keyframes(lanelets):
+def get_keyframes(lanelets, steps=20):
     current_lanelet = get_start_lanelet(lanelets)
     t = 0
     last_point = None
     keyframes = []
     while current_lanelet is not None:
-        middle = middle_of_lanelet(current_lanelet)
+        middle = middle_of_lanelet(current_lanelet, steps)
         for p in middle:
             if last_point is not None:
                 orientation = math.atan2(p[1] - last_point[1], p[0] - last_point[0])
@@ -34,7 +32,7 @@ def get_keyframes(lanelets):
     return keyframes
 
 
-def setup_env(scene_rgb, scene_seg, env_config=ENV_GONFIG):
+def setup_env(scene_rgb, scene_seg, env_config):
     bpy.ops.object.camera_add(view_align=True, location=(0, 0, 0), rotation=(0, 0, 0))
     bpy.context.active_object.name = 'render_camera'
     camera = bpy.data.objects['render_camera']
@@ -64,6 +62,7 @@ def setup_env(scene_rgb, scene_seg, env_config=ENV_GONFIG):
     mapping_node = nt.nodes.new(type="ShaderNodeMapping")
     mapping_node.rotation = env_config['rotation']
     mapping_node.scale = env_config['scale']
+    mapping_node.translation = env_config['translation']
     nt.links.new(mapping_node.outputs['Vector'], bg_node.inputs['Vector'])
 
     coord_node = nt.nodes.new(type="ShaderNodeTexCoord")
@@ -72,6 +71,21 @@ def setup_env(scene_rgb, scene_seg, env_config=ENV_GONFIG):
     gradColOut = bg_node.outputs['Color']
     backColIn = backNode.inputs['Color']
     nt.links.new(gradColOut, backColIn)
+
+    # add instance id output
+    scene_seg.render.layers["RenderLayer"].use_pass_combined = False
+    scene_seg.render.layers["RenderLayer"].use_pass_z = False
+    scene_seg.render.layers["RenderLayer"].use_pass_diffuse = True
+    scene_seg.render.layers["RenderLayer"].use_pass_object_index = True
+    scene_seg.use_nodes = True
+    seg_tree = scene_seg.node_tree
+    instance_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
+    instance_out_node.name = 'InstanceOutput'
+    instance_out_node.format.file_format = 'OPEN_EXR'
+    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
+    # seg_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
+    # seg_out_node.name = 'SegmentationOutput'
+    # seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Diffuse'], seg_out_node.inputs['Image'])
 
     scene_rgb.render.resolution_x = 1280
     scene_rgb.render.resolution_y = 800
@@ -85,8 +99,9 @@ def setup_env(scene_rgb, scene_seg, env_config=ENV_GONFIG):
     return camera, mapping_node
 
 
-def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, add_vehicle=True, car_name='ego_vehicle'):
-    keyframes = get_keyframes(lanelets)
+def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config, add_vehicle=True,
+                     car_name='ego_vehicle'):
+    keyframes = get_keyframes(lanelets, steps=config['steps_per_lanelet'])
 
     camera_offset = {'x': 0.0, 'y': 0.0, 'z': 0.11}  # realsense is looking straight ahead
 
@@ -96,7 +111,21 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, add_ve
     if not os.path.isdir(os.path.join(output_path, 'semseg_color')):
         os.makedirs(os.path.join(output_path, 'semseg_color'))
 
-    for idx, keyframe in enumerate(tqdm(keyframes)):
+    if not os.path.isdir(os.path.join(output_path, 'traffic_sign_id')):
+        os.makedirs(os.path.join(output_path, 'traffic_sign_id'))
+
+    seg_tree = scene_seg.node_tree
+    seg_tree.nodes['Render Layers'].scene = scene_seg
+
+    # seg_out_node = seg_tree.nodes['SegmentationOutput']
+    # seg_out_node.base_path = os.path.join(output_path, 'semseg_color')
+    # seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Diffuse'], seg_out_node.inputs['Image'])
+
+    instance_out_node = seg_tree.nodes['InstanceOutput']
+    instance_out_node.base_path = os.path.join(output_path, 'traffic_sign_id')
+    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
+
+    for idx, keyframe in enumerate(tqdm(keyframes[:10])):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
@@ -114,19 +143,16 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, add_ve
                            keyframe['y'] + camera_offset['y'],
                            camera_offset['z'])
         camera.rotation_euler = [-math.pi/2, math.pi, keyframe['orientation'] + math.pi/2]
-        scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'frame{:04d}.png'.format(idx))
-        bpy.ops.render.render(write_still=True)
+        # scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
+        # bpy.ops.render.render(write_still=True)
 
         # activate diffuse pass only for scene
         bpy.context.screen.scene = scene_seg
-        scene_seg.render.layers["RenderLayer"].use_pass_combined = False
-        scene_seg.render.layers["RenderLayer"].use_pass_z = False
-        scene_seg.render.layers["RenderLayer"].use_pass_diffuse = True
-        scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'frame{:04d}.png'.format(idx))
+        scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
         bpy.ops.render.render(write_still=True)
 
 
-def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_world_path, gazebo_sim_path):
+def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_world_path, gazebo_sim_path, config):
     # delete box in scene originally
     doc = schema.CreateFromDocument(xml_content)
 
@@ -134,18 +160,18 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
     scene_rgb = bpy.data.scenes.new("RGB")
     scene_segmentation = bpy.data.scenes.new("Semantic Segmentation")
 
-    groundplane.draw(doc, target_dir, scene_rgb, scene_segmentation, obstacle)
+    groundplane.draw(doc, target_dir, scene_rgb, scene_segmentation, obstacle, config)
     if add_vehicle:
         ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation) # render keyframes at the end by moving the object and calling bpy
     for obst in doc.obstacle:
         if obst.type != "blockedArea" and obst.type != "segmentationIntersection":
             obstacle.draw(obst, scene_rgb, scene_segmentation)
     mesh_basepath = os.path.join(gazebo_world_path, 'meshes')
-    for sign in doc.trafficSign:
-        traffic_sign.draw(sign, mesh_basepath, scene_rgb, scene_segmentation)
+    for sign_idx, sign in enumerate(doc.trafficSign):
+        traffic_sign.draw(sign, mesh_basepath, scene_rgb, scene_segmentation, sign_idx=sign_idx)
     for ramp in doc.ramp:
         special_objects.draw_ramp(ramp, mesh_basepath, scene_rgb, scene_segmentation)
 
-    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, )
-    render_keyframes(doc.lanelet, output_dir, scene_rgb, scene_segmentation, camera, add_vehicle=add_vehicle)
+    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, getattr(env_configs, config['env_config']))
+    render_keyframes(doc.lanelet, output_dir, scene_rgb, scene_segmentation, camera, config, add_vehicle=add_vehicle)
     # bpy.ops.wm.save_mainfile(os.path.join(output_dir, 'render_scene.blend'), compress=False)

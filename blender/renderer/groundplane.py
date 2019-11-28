@@ -24,6 +24,7 @@ from commonroad.renderer.groundplane import boundary_to_equi_distant
 from commonroad.renderer.groundplane import expand_boundary
 from commonroad.renderer.groundplane import get_lanelet_by_id
 from commonroad.renderer.groundplane import draw_rectangle
+from PIL import Image, ImageOps
 
 from blender.renderer.utils import generate_material_cycles, generate_material_internal_segmentation
 
@@ -40,7 +41,7 @@ TILE_SIZE = 2048
 PADDING = 3
 
 
-def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, segmap=False):
+def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, config, segmap=False, scale_factor=0.99):
     bpy.data.images.load(texture_file)
 
     bpy.ops.mesh.primitive_plane_add(location=(x, y, 0))
@@ -62,7 +63,6 @@ def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, s
     bm = bmesh.from_edit_mesh(me)
     uv_layer = bm.loops.layers.uv.verify()
     bm.faces.layers.tex.verify()  # currently blender needs both layers.
-    scale_factor = 0.99
     for f in bm.faces:
         for l in f.loops:
             l[uv_layer].uv *= scale_factor
@@ -78,7 +78,7 @@ def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, s
     else:
         bpy.context.scene.objects.active = obj
         bpy.ops.mesh.uv_texture_add()
-        mat = generate_material_cycles(segment_name, texture_file, obj)
+        mat = generate_material_cycles(segment_name, texture_file, shader_type=config['groundplane_shader_type'])
 
     obj.data.materials.append(mat)
 
@@ -236,7 +236,19 @@ def draw_road_marking_segmentation(ctx, marking):
         ctx.restore()
 
 
-def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
+def pad_png(path, ratio):
+    im = Image.open(path)
+    old_size = im.size  # old_size[0] is in (width, height) format
+
+    new_size = tuple([int(x * ratio) + 3 for x in old_size])
+
+    im = im.resize(new_size, Image.ANTIALIAS)
+    new_im = Image.new("RGB", old_size)
+    new_im.paste(im, ((old_size[0] - new_size[0]) // 2, (old_size[1] - new_size[1]) // 2))
+    new_im.save(path)
+
+
+def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
     bounding_box = utils.get_bounding_box(doc)
     bounding_box.x_min -= PADDING
     bounding_box.y_min -= PADDING
@@ -294,6 +306,7 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
         texture_file = "tile-{}-{}.png".format(x, y)
         texture_path = path.join(target_dir, "materials", "textures", texture_file)
         surface.write_to_png(texture_path)
+        # pad_png(texture_path, config['texture_padding_ratio'])
 
         add_ground_segment(
             texture_path,
@@ -301,7 +314,9 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
             bounding_box.y_min + (y + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
             TILE_SIZE / PIXEL_PER_UNIT,
             "Tile_{0}_{1}".format(x, y),
-            scene_rgb
+            scene_rgb,
+            config,
+            scale_factor=config['texture_padding_ratio']
         )
 
         # draw segmentation map
@@ -355,6 +370,7 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
         texture_file = "segmentation-tile-{}-{}.png".format(x, y)
         texture_path = path.join(target_dir, "materials", "textures", texture_file)
         surface.write_to_png(texture_path)
+        # pad_png(texture_path, config['texture_padding_ratio'])
 
         add_ground_segment(
             texture_path,
@@ -363,5 +379,7 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles):
             TILE_SIZE / PIXEL_PER_UNIT,
             "Seg-Tile_{0}_{1}".format(x, y),
             scene_segmentation,
-            segmap=True
+            config,
+            segmap=True,
+            scale_factor=config['texture_padding_ratio']
         )

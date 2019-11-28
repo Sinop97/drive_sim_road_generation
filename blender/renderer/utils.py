@@ -20,7 +20,7 @@ def add_segmentation_mat(mat_color, mat_name, obj):
     obj.data.materials.append(mat)
 
 
-def generate_material_cycles(material_name, filename, obj):
+def generate_material_cycles(material_name, filename, shader_type='ShaderNodeBsdfDiffuse'):
     bpy.context.scene.render.engine = 'CYCLES'
     mat = bpy.data.materials.new(material_name)
     mat.use_nodes = True
@@ -29,17 +29,21 @@ def generate_material_cycles(material_name, filename, obj):
     tex = matnodes.new('ShaderNodeTexImage')
     tex.image = bpy.data.images[os.path.basename(filename)]
 
+    if shader_type != "ShaderNodeBsdfDiffuse":
+        shader_node = matnodes.new(shader_type)
+    else:
+        shader_node = matnodes['Diffuse BSDF']
+
     # link color
-    mat.node_tree.links.new(tex.outputs['Color'], matnodes['Diffuse BSDF'].inputs['Color'])
-    mat.node_tree.links.new(matnodes['Diffuse BSDF'].outputs['BSDF'],
+    mat.node_tree.links.new(tex.outputs['Color'], shader_node.inputs['Color'])
+    mat.node_tree.links.new(shader_node.outputs['BSDF'],
                             matnodes['Material Output'].inputs['Surface'])
     return mat
 
 
 def convert_mat_to_cycles(mat):
+    # other texture slots are dummy placeholders in most cases
     texture = mat.texture_slots[0].texture
-    if len(mat.texture_slots) > 1:
-        print('Multi-texture materials not supported yet')
 
     bpy.context.scene.render.engine = 'CYCLES'
     mat.use_nodes = True

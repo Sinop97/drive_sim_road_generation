@@ -86,19 +86,18 @@ def boundary_point_lengths(boundary):
         result.append(len)
     return result
 
-def boundary_to_equi_distant(boundary):
+def boundary_to_equi_distant(boundary, steps=20):
     lengths = boundary_point_lengths(boundary)
     x = list(map(lambda p: p.x, boundary.point))
     y = list(map(lambda p: p.y, boundary.point))
-    STEPS = 20
-    eval_marks = np.arange(0, lengths[-1], lengths[-1]/STEPS)
+    eval_marks = np.arange(0, lengths[-1], lengths[-1]/steps)
     xinterp = np.interp(eval_marks, lengths, x)
     yinterp = np.interp(eval_marks, lengths, y)
     return map(lambda i: (i[0],i[1]), zip(xinterp, yinterp))
 
-def middle_of_lanelet(lanelet):
-    left = boundary_to_equi_distant(lanelet.leftBoundary)
-    right = boundary_to_equi_distant(lanelet.rightBoundary)
+def middle_of_lanelet(lanelet, steps=20):
+    left = boundary_to_equi_distant(lanelet.leftBoundary, steps)
+    right = boundary_to_equi_distant(lanelet.rightBoundary, steps)
     return list(map(lambda p: ((p[0][0] + p[1][0])/2, (p[0][1] + p[1][1])/2),
         zip(left, right)))
 

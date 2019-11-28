@@ -95,15 +95,18 @@ class Primitive:
             else:
                 p1 = np.array(points[i])
 
-            left = p1 + ortho_left * (1 + 1E-8)
-            right = p1 + ortho_right * (1 + 1E-8)
+            left = p1 + ortho_left
+            right = p1 + ortho_right
 
+            precision_scale = 1E-2
             lanelet1.leftBoundary.point.append(
-                schema.point(x=points[i][0], y=points[i][1]))
+                schema.point(x=points[i][0] + ortho_left[0] * precision_scale,
+                             y=points[i][1] + ortho_left[1] * precision_scale))
             lanelet1.rightBoundary.point.append(
                 schema.point(x=right[0], y=right[1]))
             lanelet2.leftBoundary.point.append(
-                schema.point(x=points[i][0], y=points[i][1]))
+                schema.point(x=points[i][0] + ortho_right[0] * precision_scale,
+                             y=points[i][1] + ortho_right[1] * precision_scale))
             lanelet2.rightBoundary.point.append(
                 schema.point(x=left[0], y=left[1]))
         # TODO add last point

@@ -7,18 +7,22 @@ from blender.renderer.utils import add_segmentation_mat, convert_mat_to_cycles
 import numpy as np
 
 
-def draw(sign, sign_mesh_path, scene_rgb, scene_seg):
+def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     bpy.ops.wm.collada_import(filepath=os.path.join(sign_mesh_path,
                                                     SIGN_MESHES[sign.type]['mesh'] + '.dae'))
     sign_mesh_names = []
     for obj in bpy.context.selected_objects:
         obj.name = obj.name.replace('Body', 'Seg-Sign/{}_{}'.format(sign.type, sign.id))
+        # dae importer auto-renames the UV map, need to have uniform name to be able to merge
+        for uv_layer in obj.data.uv_layers:
+            uv_layer.name = 'UVMap'
         for m_slot in obj.material_slots:
             m_slot.material = convert_mat_to_cycles(m_slot.material)
         sign_mesh_names.append(obj.name)
     sign_mesh_names = sorted(sign_mesh_names)
     bpy.ops.object.duplicate()
     bpy.ops.object.join()
+
     sign_name = 'Sign/{}_{}'.format(sign.type, sign.id)
     bpy.context.active_object.name = sign_name
     obj = bpy.data.objects[sign_name]
@@ -78,4 +82,6 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg):
     obj.scale[0] = 0.001
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
+    # pass index for instance IDs
+    obj.pass_index = sign_idx
     scene_seg.objects.link(obj)
