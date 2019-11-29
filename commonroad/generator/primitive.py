@@ -6,6 +6,8 @@ from commonroad import schema
 from functools import partial
 from scipy.optimize import root_scalar
 
+RENDER_OFFSET_RELATIVE = 0
+
 class MissingPointsException(Exception):
     pass
 
@@ -98,7 +100,7 @@ class Primitive:
             left = p1 + ortho_left
             right = p1 + ortho_right
 
-            precision_scale = 1E-2
+            precision_scale = RENDER_OFFSET_RELATIVE
             lanelet1.leftBoundary.point.append(
                 schema.point(x=points[i][0] + ortho_left[0] * precision_scale,
                              y=points[i][1] + ortho_left[1] * precision_scale))
@@ -407,11 +409,15 @@ class Intersection(Primitive):
             return (np.array([0, self._size]), 0.5 * math.pi, 0)
 
     def export(self, config):
+        # small offset added for clean segmentation lanes
+        # (otherwise there is visible imprecision due to floating-point errors)
+        rendering_offset = RENDER_OFFSET_RELATIVE * config.road_width
+
         southRight = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
         southRight.leftBoundary.lineMarking = "dashed"
         southRight.rightBoundary.lineMarking = "solid"
-        southRight.leftBoundary.point.append(schema.point(x=0, y=-self._size))
-        southRight.leftBoundary.point.append(schema.point(x=0, y=-config.road_width))
+        southRight.leftBoundary.point.append(schema.point(x=-rendering_offset, y=-self._size))
+        southRight.leftBoundary.point.append(schema.point(x=-rendering_offset, y=-config.road_width))
         southRight.rightBoundary.point.append(schema.point(x=config.road_width, y=-self._size))
         southRight.rightBoundary.point.append(schema.point(x=config.road_width, y=-config.road_width))
 
@@ -425,15 +431,15 @@ class Intersection(Primitive):
         northRight = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
         northRight.leftBoundary.lineMarking = "dashed"
         northRight.rightBoundary.lineMarking = "solid"
-        northRight.leftBoundary.point.append(schema.point(x=0, y=self._size))
-        northRight.leftBoundary.point.append(schema.point(x=0, y=config.road_width))
+        northRight.leftBoundary.point.append(schema.point(x=-rendering_offset, y=self._size))
+        northRight.leftBoundary.point.append(schema.point(x=-rendering_offset, y=config.road_width))
         northRight.rightBoundary.point.append(schema.point(x=-config.road_width, y=self._size))
         northRight.rightBoundary.point.append(schema.point(x=-config.road_width, y=config.road_width))
 
         northLeft = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
         northLeft.rightBoundary.lineMarking = "solid"
-        northLeft.leftBoundary.point.append(schema.point(x=0, y=config.road_width))
-        northLeft.leftBoundary.point.append(schema.point(x=0, y=self._size))
+        northLeft.leftBoundary.point.append(schema.point(x=-rendering_offset - 3E-3, y=config.road_width))
+        northLeft.leftBoundary.point.append(schema.point(x=-rendering_offset - 3E-3, y=self._size))
         northLeft.rightBoundary.point.append(schema.point(x=config.road_width, y=config.road_width))
         northLeft.rightBoundary.point.append(schema.point(x=config.road_width, y=self._size))
 
@@ -447,8 +453,8 @@ class Intersection(Primitive):
         eastLeft = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
         eastLeft.rightBoundary.lineMarking = "solid"
         eastLeft.leftBoundary.lineMarking = "dashed"
-        eastLeft.leftBoundary.point.append(schema.point(x=config.road_width, y=0))
-        eastLeft.leftBoundary.point.append(schema.point(x=self._size, y=0))
+        eastLeft.leftBoundary.point.append(schema.point(x=config.road_width, y=rendering_offset))
+        eastLeft.leftBoundary.point.append(schema.point(x=self._size, y=rendering_offset))
         eastLeft.rightBoundary.point.append(schema.point(x=config.road_width, y=-config.road_width))
         eastLeft.rightBoundary.point.append(schema.point(x=self._size, y=-config.road_width))
 
@@ -462,8 +468,8 @@ class Intersection(Primitive):
         westLeft = schema.lanelet(leftBoundary=schema.boundary(), rightBoundary=schema.boundary())
         westLeft.leftBoundary.lineMarking = "dashed"
         westLeft.rightBoundary.lineMarking = "solid"
-        westLeft.leftBoundary.point.append(schema.point(x=-config.road_width, y=0))
-        westLeft.leftBoundary.point.append(schema.point(x=-self._size, y=0))
+        westLeft.leftBoundary.point.append(schema.point(x=-config.road_width, y=-rendering_offset))
+        westLeft.leftBoundary.point.append(schema.point(x=-self._size, y=-rendering_offset))
         westLeft.rightBoundary.point.append(schema.point(x=-config.road_width, y=config.road_width))
         westLeft.rightBoundary.point.append(schema.point(x=-self._size, y=config.road_width))
 

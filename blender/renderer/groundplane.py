@@ -155,6 +155,35 @@ def draw_drivable_segmentation(ctx, lanelet_list):
         ctx.restore()
 
 
+# necessary because otherwise we have bleeding artifacts between the two road lanes
+def draw_midline_segmentation(ctx, lanelet_list, boundary_name):
+    all_ids = [lanelet.id for lanelet in lanelet_list
+        if getattr(lanelet, boundary_name).lineMarking is not None]
+    while len(all_ids) > 0:
+        current_id = all_ids[0]
+        suc = expand_boundary(lanelet_list, get_lanelet_by_id(lanelet_list, current_id), boundary_name, "successor")
+        pred = expand_boundary(lanelet_list, get_lanelet_by_id(lanelet_list, current_id), boundary_name, "predecessor")
+        ids_in_run = pred[::-1] + [current_id] + suc
+
+        for id in ids_in_run:
+            all_ids.remove(id)
+
+        lanelets = list(map(lambda x: get_lanelet_by_id(lanelet_list, x), ids_in_run))
+
+        ctx.save()
+        ctx.set_source_rgb(*convert_to_one_range(DRIVABLE_AREA_SEGMENTATION_COLOR))
+        ctx.set_line_width (0.02)
+
+        ctx.move_to(getattr(lanelets[0], boundary_name).point[0].x,
+            getattr(lanelets[0], boundary_name).point[0].y)
+
+        for lanelet in lanelets:
+            for p in getattr(lanelet, boundary_name).point:
+                ctx.line_to(p.x, p.y)
+        ctx.stroke()
+        ctx.restore()
+
+
 def draw_blocked_area_segmentation(ctx, rectangle):
     ctx.save()
     ctx.set_source_rgb(*convert_to_one_range(BLOCKED_AREA_SEGMENTATION_COLOR))
@@ -226,13 +255,19 @@ def draw_road_marking_segmentation(ctx, marking):
         ctx.restore()
 
     if marking_visual.marker_image:
+        # draw to temporary surface first to be able to change color
         ctx.save()
+        img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 72, 500) # todo: will have to change size dynamically if we add other markers in the future, for now all have this
+        ctx_temp = cairo.Context(img)
         handle = Rsvg.Handle()
         svg = handle.new_from_file(marking_visual.marker_image.value)
+        svg.render_cairo(ctx_temp)
+
         ctx.translate(marking.centerPoint.x, marking.centerPoint.y)
         ctx.rotate(marking.orientation)
         ctx.scale(0.001, 0.001)
-        svg.render_cairo(ctx)
+        ctx.mask_surface(img)
+        ctx.stroke()
         ctx.restore()
 
 
@@ -337,6 +372,7 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
         ctx.translate(- x * TILE_SIZE / PIXEL_PER_UNIT, - y * TILE_SIZE / PIXEL_PER_UNIT)
 
         draw_drivable_segmentation(ctx, doc.lanelet)
+        draw_midline_segmentation(ctx, doc.lanelet, "leftBoundary")
         for obstacle in doc.obstacle:
             if obstacle.type == "segmentationIntersection":
                 for rect in obstacle.shape.rectangle:
