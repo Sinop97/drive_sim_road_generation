@@ -90,16 +90,42 @@ def boundary_to_equi_distant(boundary, steps=20):
     lengths = boundary_point_lengths(boundary)
     x = list(map(lambda p: p.x, boundary.point))
     y = list(map(lambda p: p.y, boundary.point))
+    # in the turning intersection we can have lanes where all boundary points on one side are in the same spot
+    if lengths[-1] == 0:
+        return [(boundary.point[0].x, boundary.point[0].y) for step in range(steps)]
+
     eval_marks = np.arange(0, lengths[-1], lengths[-1]/steps)
     xinterp = np.interp(eval_marks, lengths, x)
     yinterp = np.interp(eval_marks, lengths, y)
-    return map(lambda i: (i[0],i[1]), zip(xinterp, yinterp))
+    return map(lambda i: (i[0], i[1]), zip(xinterp, yinterp))
+
 
 def middle_of_lanelet(lanelet, steps=20):
     left = boundary_to_equi_distant(lanelet.leftBoundary, steps)
     right = boundary_to_equi_distant(lanelet.rightBoundary, steps)
     return list(map(lambda p: ((p[0][0] + p[1][0])/2, (p[0][1] + p[1][1])/2),
         zip(left, right)))
+
+def middle_point_lengths(points):
+    result = [0]
+    len = 0
+    for (p1, p2) in zip(points, points[1:]):
+        len += math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
+        result.append(len)
+    return result
+
+def middle_of_lanelet_equidistant(lanelet, step_length=0.5):
+    # just approximate middle line with a fixed number of points
+    left = boundary_to_equi_distant(lanelet.leftBoundary, 20)
+    right = boundary_to_equi_distant(lanelet.rightBoundary, 20)
+    middle = [((p_l[0] + p_r[0])/2, (p_l[1] + p_r[1])/2) for p_l, p_r in zip(left, right)]
+    lengths_middle = middle_point_lengths(middle)
+    result = []
+    for l in np.arange(step_length, lengths_middle[-1], step_length):
+        point_base_idx = np.argwhere(lengths_middle < l)[-1][0]
+        point = np.array(middle[point_base_idx]) + (np.array(middle[point_base_idx + 1]) - np.array(middle[point_base_idx])) * (l - lengths_middle[point_base_idx])
+        result.append(point)
+    return result
 
 def get_lanelet_by_id(lanelet_list, id):
     for lanelet in lanelet_list:

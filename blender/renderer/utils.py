@@ -57,9 +57,10 @@ def convert_mat_to_cycles(mat):
     return mat
 
 
-def generate_material_internal_segmentation(material_name, filename, obj):
+def generate_material_internal_segmentation(material_name, filename):
     bpy.data.textures.new(filename, type='IMAGE')
     bpy.data.textures[filename].image = bpy.data.images[os.path.basename(filename)]
+    bpy.data.textures[filename].extension = 'CLIP'
     bpy.data.materials.new(material_name)
     mat = bpy.data.materials[material_name]
     mat.use_shadeless = True

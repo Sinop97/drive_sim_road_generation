@@ -58,21 +58,21 @@ def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, c
     bpy.ops.object.editmode_toggle()
     bpy.ops.uv.unwrap()
 
-    # scale down uv map to prevent bleed
-    me = obj.data
-    bm = bmesh.from_edit_mesh(me)
-    uv_layer = bm.loops.layers.uv.verify()
-    bm.faces.layers.tex.verify()  # currently blender needs both layers.
-    for f in bm.faces:
-        for l in f.loops:
-            l[uv_layer].uv *= scale_factor
-            l[uv_layer].uv += Vector(((1 - scale_factor)/2, (1 - scale_factor)/2))
-    bmesh.update_edit_mesh(me)
-
+    # scale down uv map to prevent bleed -> not necessary if texture is not mirrored
+    # me = obj.data
+    # bm = bmesh.from_edit_mesh(me)
+    # uv_layer = bm.loops.layers.uv.verify()
+    # bm.faces.layers.tex.verify()  # currently blender needs both layers.
+    # for f in bm.faces:
+    #     for l in f.loops:
+    #         l[uv_layer].uv *= scale_factor
+    #         l[uv_layer].uv += Vector(((1 - scale_factor)/2, (1 - scale_factor)/2))
+    # bmesh.update_edit_mesh(me)
+    #
     bpy.ops.object.editmode_toggle()
 
     if segmap:
-        mat = generate_material_internal_segmentation(segment_name, texture_file, obj)
+        mat = generate_material_internal_segmentation(segment_name, texture_file)
         mat.texture_slots[0].texture_coords = 'UV'
         mat.texture_slots[0].texture.use_mipmap = False
     else:

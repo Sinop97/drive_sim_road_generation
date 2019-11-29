@@ -4,19 +4,19 @@ from commonroad import schema
 from os import path, makedirs
 import bpy
 import os
-from commonroad.renderer.ego_vehicle import get_start_lanelet, get_next_lanelet, middle_of_lanelet
+from commonroad.renderer.ego_vehicle import get_start_lanelet, get_next_lanelet, middle_of_lanelet, middle_of_lanelet_equidistant
 import math
 from tqdm import tqdm
 from blender.renderer import env_configs
 
 
-def get_keyframes(lanelets, steps=20):
+def get_keyframes(lanelets, config):
     current_lanelet = get_start_lanelet(lanelets)
     t = 0
     last_point = None
     keyframes = []
     while current_lanelet is not None:
-        middle = middle_of_lanelet(current_lanelet, steps)
+        middle = middle_of_lanelet_equidistant(current_lanelet, step_length=config['render_interval_distance'])
         for p in middle:
             if last_point is not None:
                 orientation = math.atan2(p[1] - last_point[1], p[0] - last_point[0])
@@ -101,7 +101,7 @@ def setup_env(scene_rgb, scene_seg, env_config):
 
 def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config, add_vehicle=True,
                      car_name='ego_vehicle'):
-    keyframes = get_keyframes(lanelets, steps=config['steps_per_lanelet'])
+    keyframes = get_keyframes(lanelets, config)
 
     camera_offset = {'x': 0.0, 'y': 0.0, 'z': 0.11}  # realsense is looking straight ahead
 
@@ -125,7 +125,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
     instance_out_node.base_path = os.path.join(output_path, 'traffic_sign_id')
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
 
-    for idx, keyframe in enumerate(tqdm(keyframes[:10])):
+    for idx, keyframe in enumerate(tqdm(keyframes)):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
@@ -143,8 +143,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
                            keyframe['y'] + camera_offset['y'],
                            camera_offset['z'])
         camera.rotation_euler = [-math.pi/2, math.pi, keyframe['orientation'] + math.pi/2]
-        # scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
-        # bpy.ops.render.render(write_still=True)
+        scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
+        bpy.ops.render.render(write_still=True)
 
         # activate diffuse pass only for scene
         bpy.context.screen.scene = scene_seg

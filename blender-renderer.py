@@ -15,10 +15,10 @@ INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
 GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'  # location of the drive_gazebo_worlds package
 GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim package
 
-config = {'steps_per_lanelet': 20,
+config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
           'env_config': 'subway_entrance',
-          'texture_padding_ratio': 0.99}
+          'texture_padding_ratio': 1.0}
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
