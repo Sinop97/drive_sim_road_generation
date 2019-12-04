@@ -132,7 +132,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
 
-    for idx, keyframe in enumerate(tqdm(keyframes[:2])):
+    for idx, keyframe in enumerate(tqdm(keyframes)):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
