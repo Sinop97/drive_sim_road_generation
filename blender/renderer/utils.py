@@ -61,6 +61,8 @@ def generate_material_internal_segmentation(material_name, filename):
     bpy.data.textures.new(filename, type='IMAGE')
     bpy.data.textures[filename].image = bpy.data.images[os.path.basename(filename)]
     bpy.data.textures[filename].extension = 'CLIP'
+    bpy.data.textures[filename].use_interpolation = False
+    bpy.data.textures[filename].filter_size = 0.10
     bpy.data.materials.new(material_name)
     mat = bpy.data.materials[material_name]
     mat.use_shadeless = True

@@ -15,10 +15,15 @@ INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
 GAZEBO_WORLDS_PATH = '../drive_gazebo_worlds'  # location of the drive_gazebo_worlds package
 GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim package
 
+
+# blender does not less us parse arguments
 config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
           'env_config': 'subway_entrance',
-          'texture_padding_ratio': 1.0}
+          'texture_padding_ratio': 1.0,
+          'render_passes': ['rgb', 'semseg_color', 'instances'],
+          'camera_position_offset': (0.220317, -0.0325, 0),
+          'image_resolution': (1280, 960)}
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)

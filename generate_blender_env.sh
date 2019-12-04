@@ -1,1 +1,1 @@
-blender -P blender-renderer.py
+blender -b -P blender-renderer.py

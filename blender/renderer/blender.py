@@ -32,7 +32,7 @@ def get_keyframes(lanelets, config):
     return keyframes
 
 
-def setup_env(scene_rgb, scene_seg, env_config):
+def setup_env(scene_rgb, scene_seg, env_config, resolution):
     bpy.ops.object.camera_add(view_align=True, location=(0, 0, 0), rotation=(0, 0, 0))
     bpy.context.active_object.name = 'render_camera'
     camera = bpy.data.objects['render_camera']
@@ -75,25 +75,29 @@ def setup_env(scene_rgb, scene_seg, env_config):
     # add instance id output
     scene_seg.render.layers["RenderLayer"].use_pass_combined = False
     scene_seg.render.layers["RenderLayer"].use_pass_z = False
-    scene_seg.render.layers["RenderLayer"].use_pass_diffuse = True
+    scene_seg.render.layers["RenderLayer"].use_pass_diffuse = False
+    scene_seg.render.layers["RenderLayer"].use_pass_color = True
     scene_seg.render.layers["RenderLayer"].use_pass_object_index = True
     scene_seg.use_nodes = True
     seg_tree = scene_seg.node_tree
     instance_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
     instance_out_node.name = 'InstanceOutput'
+    instance_out_node.format.compression = 0
+    instance_out_node.file_slots[0].path = 'Image.exr'
     instance_out_node.format.file_format = 'OPEN_EXR'
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
+    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Color'], seg_tree.nodes['Composite'].inputs['Image'])
     # seg_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
     # seg_out_node.name = 'SegmentationOutput'
     # seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Diffuse'], seg_out_node.inputs['Image'])
 
-    scene_rgb.render.resolution_x = 1280
-    scene_rgb.render.resolution_y = 800
+    scene_rgb.render.resolution_x = resolution[0]
+    scene_rgb.render.resolution_y = resolution[1]
     scene_rgb.render.image_settings.compression = 0
     scene_rgb.render.resolution_percentage = 100
 
-    scene_seg.render.resolution_x = 1280
-    scene_seg.render.resolution_y = 800
+    scene_seg.render.resolution_x = resolution[0]
+    scene_seg.render.resolution_y = resolution[1]
     scene_seg.render.image_settings.compression = 0
     scene_seg.render.resolution_percentage = 100
     return camera, mapping_node
@@ -125,31 +129,44 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
     instance_out_node.base_path = os.path.join(output_path, 'traffic_sign_id')
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
 
-    for idx, keyframe in enumerate(tqdm(keyframes)):
+    scene_rgb.render.use_file_extension = False
+    scene_seg.render.use_file_extension = False
+
+    for idx, keyframe in enumerate(tqdm(keyframes[:2])):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
         scene_rgb.render.layers["RenderLayer"].use_pass_diffuse = False
         if add_vehicle:
             car = bpy.data.objects[car_name]
-            car.location = (keyframe['x'], keyframe['y'], 0)
+            car.location = (keyframe['x'] + config['camera_position_offset'][0],
+                            keyframe['y'] + config['camera_position_offset'][1],
+                            0 + config['camera_position_offset'][2])
             car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
             seg_car = bpy.data.objects['seg-' + car_name]
-            seg_car.location = (keyframe['x'], keyframe['y'], 0)
+            seg_car.location = (keyframe['x'] + config['camera_position_offset'][0],
+                                keyframe['y'] + config['camera_position_offset'][1],
+                                0 + config['camera_position_offset'][2])
             seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
         camera.location = (keyframe['x'] + camera_offset['x'],
                            keyframe['y'] + camera_offset['y'],
                            camera_offset['z'])
         camera.rotation_euler = [-math.pi/2, math.pi, keyframe['orientation'] + math.pi/2]
-        scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
-        bpy.ops.render.render(write_still=True)
+        if 'rgb' in config['render_passes']:
+            scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
+            bpy.ops.render.render(write_still=True)
 
         # activate diffuse pass only for scene
-        bpy.context.screen.scene = scene_seg
-        scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
-        bpy.ops.render.render(write_still=True)
+        if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
+            bpy.context.screen.scene = scene_seg
+            if 'semseg_color' in config['render_passes']:
+                scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
+            bpy.ops.render.render(write_still=True)
+            # blender seems to insist of plastering the frame number at the end of the file. fix manually
+            os.rename(os.path.join(output_path, 'traffic_sign_id', 'Image.exr0001'),
+                      os.path.join(output_path, 'traffic_sign_id', 'Image{:04d}.exr'.format(idx+1)))
 
 
 def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_world_path, gazebo_sim_path, config):
@@ -162,7 +179,7 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
 
     groundplane.draw(doc, target_dir, scene_rgb, scene_segmentation, obstacle, config)
     if add_vehicle:
-        ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation) # render keyframes at the end by moving the object and calling bpy
+        ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation, config) # render keyframes at the end by moving the object and calling bpy
     for obst in doc.obstacle:
         if obst.type != "blockedArea" and obst.type != "segmentationIntersection":
             obstacle.draw(obst, scene_rgb, scene_segmentation)
@@ -172,6 +189,7 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
     for ramp in doc.ramp:
         special_objects.draw_ramp(ramp, mesh_basepath, scene_rgb, scene_segmentation)
 
-    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, getattr(env_configs, config['env_config']))
+    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, getattr(env_configs, config['env_config']),
+                                     config['image_resolution'])
     render_keyframes(doc.lanelet, output_dir, scene_rgb, scene_segmentation, camera, config, add_vehicle=add_vehicle)
     # bpy.ops.wm.save_mainfile(os.path.join(output_dir, 'render_scene.blend'), compress=False)
