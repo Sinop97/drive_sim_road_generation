@@ -474,7 +474,7 @@ def draw(doc, target_dir, scenes, obstacles, config):
             bounding_box.x_min + (x + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
             bounding_box.y_min + (y + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
             TILE_SIZE / PIXEL_PER_UNIT,
-            "Seg-Tile_{0}_{1}".format(x, y),
+            "Lane-Tile_{0}_{1}".format(x, y),
             scenes['lane_detection'],
             config,
             segmap=True

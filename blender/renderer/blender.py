@@ -88,7 +88,6 @@ def setup_env(scene_rgb, scene_seg, scene_lanes, env_config, resolution):
     instance_out_node.format.compression = 0
     instance_out_node.file_slots[0].path = 'Image.exr'
     instance_out_node.format.file_format = 'OPEN_EXR'
-    print(seg_tree.nodes['Render Layers'].outputs.keys())
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Color'], seg_tree.nodes['Composite'].inputs['Image'])
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexMA'], instance_out_node.inputs['Image'])
     # seg_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
@@ -151,15 +150,15 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
         scene_rgb.render.layers["RenderLayer"].use_pass_diffuse = False
         if add_vehicle:
             car = bpy.data.objects[car_name]
-            car.location = (keyframe['x'] + config['camera_position_offset'][0],
-                            keyframe['y'] + config['camera_position_offset'][1],
-                            0 + config['camera_position_offset'][2])
+            car.location = (keyframe['x'],
+                            keyframe['y'],
+                            0)
             car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
             seg_car = bpy.data.objects['seg-' + car_name]
-            seg_car.location = (keyframe['x'] + config['camera_position_offset'][0],
-                                keyframe['y'] + config['camera_position_offset'][1],
-                                0 + config['camera_position_offset'][2])
+            seg_car.location = (keyframe['x'],
+                                keyframe['y'],
+                                0)
             seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
         camera.location = (keyframe['x'] + camera_offset['x'],
