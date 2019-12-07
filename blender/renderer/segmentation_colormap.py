@@ -83,6 +83,11 @@ SIGN_TO_COLOR = {'10_zone_beginn': (0, 255, 0),
 
 INTERSECTION_COLOR = (64, 128, 255)
 
+# only used in separate lane segmentation map
+LANE_MARKING_RIGHT_SIDE = (51, 0, 0)
+LANE_MARKING_MIDDLE = (0, 51, 0)
+LANE_MARKING_LEFT_SIDE = (0, 0, 51)
+
 
 def convert_to_one_range(color):
     return (color[0]/255, color[1]/255, color[2]/255)

@@ -178,8 +178,11 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
     bpy.ops.object.delete(use_global=False)
     scene_rgb = bpy.data.scenes.new("RGB")
     scene_segmentation = bpy.data.scenes.new("Semantic Segmentation")
+    scene_lanes = bpy.data.scenes.new("Lane Segmentation")
 
-    groundplane.draw(doc, target_dir, scene_rgb, scene_segmentation, obstacle, config)
+    scenes = {'rgb': scene_rgb, 'segmentation': scene_segmentation, 'lane_detection': scene_lanes}
+
+    groundplane.draw(doc, target_dir, scenes, obstacle, config)
     if add_vehicle:
         # render keyframes at the end by moving the object and calling bpy
         ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation, config)

@@ -33,7 +33,8 @@ import bmesh
 from mathutils import Vector
 from blender.renderer.segmentation_colormap import BACKGROUND_COLOR, DRIVABLE_AREA_SEGMENTATION_COLOR,\
     LANE_MARKING_SEGMENTATION_COLOR, STOPLINE_DASHED_SEGMENTATION_COLOR, STOPLINE_SEGMENTATION_COLOR, \
-    ZEBRA_COLOR, BLOCKED_AREA_SEGMENTATION_COLOR, TRAFFIC_MARKING_SEGMENTATION_COLORS, INTERSECTION_COLOR
+    ZEBRA_COLOR, BLOCKED_AREA_SEGMENTATION_COLOR, TRAFFIC_MARKING_SEGMENTATION_COLORS, INTERSECTION_COLOR, \
+    LANE_MARKING_RIGHT_SIDE, LANE_MARKING_MIDDLE, LANE_MARKING_LEFT_SIDE
 from blender.renderer.segmentation_colormap import convert_to_one_range
 
 PIXEL_PER_UNIT = 500
@@ -41,7 +42,7 @@ TILE_SIZE = 2048
 PADDING = 3
 
 
-def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, config, segmap=False, scale_factor=0.99):
+def add_ground_segment(texture_file, x, y, segment_scale, segment_name, scene, config, segmap=False):
     bpy.data.images.load(texture_file)
 
     bpy.ops.mesh.primitive_plane_add(location=(x, y, 0))
@@ -184,6 +185,37 @@ def draw_midline_segmentation(ctx, lanelet_list, boundary_name):
         ctx.restore()
 
 
+def draw_drivable_boundaries(ctx, lanelet_list, boundary_name, color=(1, 1, 1), starting_idx=0):
+    ctx.set_source_rgb(*color)
+    all_ids = [lanelet.id for lanelet in lanelet_list
+               if getattr(lanelet, boundary_name).lineMarking is not None]
+
+    # follows the lanes connected to 0 lane only (the starting lane segment)
+    if starting_idx == 0:
+        current_id = all_ids[starting_idx]
+    else:
+        current_id = starting_idx
+    suc = expand_boundary(lanelet_list, get_lanelet_by_id(lanelet_list, current_id), boundary_name, "successor",
+                          ignore_boundary=True)
+    pred = expand_boundary(lanelet_list, get_lanelet_by_id(lanelet_list, current_id), boundary_name, "predecessor",
+                           ignore_boundary=True)
+    ids_in_run = pred[::-1] + [current_id] + suc
+
+    lanelets = list(map(lambda x: get_lanelet_by_id(lanelet_list, x), ids_in_run))
+
+    ctx.save()
+    ctx.set_line_width (0.02)
+
+    ctx.move_to(getattr(lanelets[0], boundary_name).point[0].x,
+        getattr(lanelets[0], boundary_name).point[0].y)
+
+    for lanelet in lanelets:
+        for p in getattr(lanelet, boundary_name).point:
+            ctx.line_to(p.x, p.y)
+    ctx.stroke()
+    ctx.restore()
+
+
 def draw_blocked_area_segmentation(ctx, rectangle):
     ctx.save()
     ctx.set_source_rgb(*convert_to_one_range(BLOCKED_AREA_SEGMENTATION_COLOR))
@@ -283,7 +315,7 @@ def pad_png(path, ratio):
     new_im.save(path)
 
 
-def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
+def draw(doc, target_dir, scenes, obstacles, config):
     bounding_box = utils.get_bounding_box(doc)
     bounding_box.x_min -= PADDING
     bounding_box.y_min -= PADDING
@@ -334,14 +366,9 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
         for road_marking in doc.roadMarking:
             draw_road_marking(ctx, road_marking)
 
-        # sha_256 = hashlib.sha()
-        # sha_256.update(surface.get_data())
-        # hash = sha_256.hexdigest()
-
         texture_file = "tile-{}-{}.png".format(x, y)
         texture_path = path.join(target_dir, "materials", "textures", texture_file)
         surface.write_to_png(texture_path)
-        # pad_png(texture_path, config['texture_padding_ratio'])
 
         add_ground_segment(
             texture_path,
@@ -349,9 +376,8 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
             bounding_box.y_min + (y + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
             TILE_SIZE / PIXEL_PER_UNIT,
             "Tile_{0}_{1}".format(x, y),
-            scene_rgb,
-            config,
-            scale_factor=config['texture_padding_ratio']
+            scenes['rgb'],
+            config
         )
 
         # draw segmentation map
@@ -399,14 +425,9 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
         for road_marking in doc.roadMarking:
             draw_road_marking_segmentation(ctx, road_marking)
 
-        # sha_256 = hashlib.sha()
-        # sha_256.update(surface.get_data())
-        # hash = sha_256.hexdigest()
-
         texture_file = "segmentation-tile-{}-{}.png".format(x, y)
         texture_path = path.join(target_dir, "materials", "textures", texture_file)
         surface.write_to_png(texture_path)
-        # pad_png(texture_path, config['texture_padding_ratio'])
 
         add_ground_segment(
             texture_path,
@@ -414,8 +435,47 @@ def draw(doc, target_dir, scene_rgb, scene_segmentation, obstacles, config):
             bounding_box.y_min + (y + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
             TILE_SIZE / PIXEL_PER_UNIT,
             "Seg-Tile_{0}_{1}".format(x, y),
-            scene_segmentation,
+            scenes['segmentation'],
             config,
-            segmap=True,
-            scale_factor=config['texture_padding_ratio']
+            segmap=True
+        )
+
+        # draw lane segmentation
+        surface = cairo.ImageSurface(cairo.FORMAT_RGB24, TILE_SIZE, TILE_SIZE)
+        ctx = cairo.Context(surface)
+
+        ctx.set_source_rgb(*BACKGROUND_COLOR)
+        ctx.rectangle(0, 0, TILE_SIZE, TILE_SIZE)
+        ctx.fill()
+
+        # Inverse y-axis
+        ctx.translate(0, TILE_SIZE / 2)
+        ctx.scale(1, -1)
+        ctx.translate(0, -TILE_SIZE / 2)
+
+        ctx.scale(PIXEL_PER_UNIT, PIXEL_PER_UNIT)
+        ctx.translate(-bounding_box.x_min, -bounding_box.y_min)
+        ctx.translate(- x * TILE_SIZE / PIXEL_PER_UNIT, - y * TILE_SIZE / PIXEL_PER_UNIT)
+
+        draw_drivable_boundaries(ctx, doc.lanelet, "leftBoundary",
+                                 convert_to_one_range(LANE_MARKING_MIDDLE))
+        draw_drivable_boundaries(ctx, doc.lanelet, "rightBoundary",
+                                 convert_to_one_range(LANE_MARKING_RIGHT_SIDE))
+        # left neightbor
+        draw_drivable_boundaries(ctx, doc.lanelet, "rightBoundary", convert_to_one_range(LANE_MARKING_LEFT_SIDE),
+                                 starting_idx=doc.lanelet[0].adjacentLeft.ref)
+
+        texture_file = "lane_detection-tile-{}-{}.png".format(x, y)
+        texture_path = path.join(target_dir, "materials", "textures", texture_file)
+        surface.write_to_png(texture_path)
+
+        add_ground_segment(
+            texture_path,
+            bounding_box.x_min + (x + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
+            bounding_box.y_min + (y + 0.5) * TILE_SIZE / PIXEL_PER_UNIT,
+            TILE_SIZE / PIXEL_PER_UNIT,
+            "Seg-Tile_{0}_{1}".format(x, y),
+            scenes['lane_detection'],
+            config,
+            segmap=True
         )
