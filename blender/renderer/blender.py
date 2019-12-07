@@ -77,7 +77,8 @@ def setup_env(scene_rgb, scene_seg, env_config, resolution):
     scene_seg.render.layers["RenderLayer"].use_pass_z = False
     scene_seg.render.layers["RenderLayer"].use_pass_diffuse = False
     scene_seg.render.layers["RenderLayer"].use_pass_color = True
-    scene_seg.render.layers["RenderLayer"].use_pass_object_index = True
+    scene_seg.render.layers["RenderLayer"].use_pass_object_index =   False
+    scene_seg.render.layers["RenderLayer"].use_pass_material_index = True
     scene_seg.use_nodes = True
     seg_tree = scene_seg.node_tree
     instance_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
@@ -85,8 +86,9 @@ def setup_env(scene_rgb, scene_seg, env_config, resolution):
     instance_out_node.format.compression = 0
     instance_out_node.file_slots[0].path = 'Image.exr'
     instance_out_node.format.file_format = 'OPEN_EXR'
-    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
+    print(seg_tree.nodes['Render Layers'].outputs.keys())
     seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Color'], seg_tree.nodes['Composite'].inputs['Image'])
+    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexMA'], instance_out_node.inputs['Image'])
     # seg_out_node = seg_tree.nodes.new(type="CompositorNodeOutputFile")
     # seg_out_node.name = 'SegmentationOutput'
     # seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['Diffuse'], seg_out_node.inputs['Image'])
@@ -127,7 +129,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
 
     instance_out_node = seg_tree.nodes['InstanceOutput']
     instance_out_node.base_path = os.path.join(output_path, 'traffic_sign_id')
-    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexOB'], instance_out_node.inputs['Image'])
+    seg_tree.links.new(seg_tree.nodes['Render Layers'].outputs['IndexMA'], instance_out_node.inputs['Image'])
 
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False

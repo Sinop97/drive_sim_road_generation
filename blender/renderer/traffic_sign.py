@@ -55,7 +55,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
         else:
             face.material_index = 1
 
-    mat = bpy.data.materials.new(name="Seg-Mat/Seg-Sign-Base/{}_{}_{}-backside".format(sign.type, sign.id,
+    mat = bpy.data.materials.new(name="Seg-Mat/Seg-Sign-Base/{}_{}_{}-backside_color".format(sign.type, sign.id,
                                                                                        len(sign_mesh_names)-1))
     mat.diffuse_color = convert_to_one_range(convert_to_one_range(SIGN_BASE_COLOR))
     mat.use_shadeless = True
@@ -87,4 +87,5 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     obj.data.use_auto_smooth = True
     print('Sign {} setting pass index to {} and name to {}'.format(sign.type, sign_idx, sign_name))
     obj.pass_index = sign_idx
+    bpy.data.materials[obj.material_slots[-1].material.name].pass_index = sign_idx
     scene_seg.objects.link(obj)
