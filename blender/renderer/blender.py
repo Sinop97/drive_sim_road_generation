@@ -132,7 +132,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
 
-    for idx, keyframe in enumerate(tqdm(keyframes)):
+    for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
@@ -161,7 +161,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
         # activate diffuse pass only for scene
         if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
             bpy.context.screen.scene = scene_seg
-            if 'semseg_color' in config['render_passes']:
+            if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
                 scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
             bpy.ops.render.render(write_still=True)
             # blender seems to insist of plastering the frame number at the end of the file. fix manually
@@ -179,13 +179,14 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
 
     groundplane.draw(doc, target_dir, scene_rgb, scene_segmentation, obstacle, config)
     if add_vehicle:
-        ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation, config) # render keyframes at the end by moving the object and calling bpy
+        # render keyframes at the end by moving the object and calling bpy
+        ego_vehicle.draw(gazebo_sim_path, scene_rgb, scene_segmentation, config)
     for obst in doc.obstacle:
         if obst.type != "blockedArea" and obst.type != "segmentationIntersection":
             obstacle.draw(obst, scene_rgb, scene_segmentation)
     mesh_basepath = os.path.join(gazebo_world_path, 'meshes')
     for sign_idx, sign in enumerate(doc.trafficSign):
-        traffic_sign.draw(sign, mesh_basepath, scene_rgb, scene_segmentation, sign_idx=sign_idx)
+        traffic_sign.draw(sign, mesh_basepath, scene_rgb, scene_segmentation, sign_idx=sign_idx+1)
     for ramp in doc.ramp:
         special_objects.draw_ramp(ramp, mesh_basepath, scene_rgb, scene_segmentation)
 

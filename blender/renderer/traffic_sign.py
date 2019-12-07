@@ -32,6 +32,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     obj.scale[0] = 0.001
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
+    obj.data.use_auto_smooth = True
     scene_rgb.objects.link(obj)
 
     for idx, name in enumerate(sign_mesh_names[:-1]):
@@ -83,5 +84,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
     # pass index for instance IDs
+    obj.data.use_auto_smooth = True
+    print('Sign {} setting pass index to {} and name to {}'.format(sign.type, sign_idx, sign_name))
     obj.pass_index = sign_idx
     scene_seg.objects.link(obj)

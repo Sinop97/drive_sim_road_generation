@@ -6,7 +6,8 @@ import shutil
 sys.path.append(os.getcwd())
 
 from blender.renderer.blender import generate_blend
-import sys, os
+import sys
+import os
 
 OUTPUT_DIR = 'blender-output'  # output directory
 FORCE_OUTPUT = True  # overwrite output if True
@@ -21,9 +22,11 @@ config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
           'env_config': 'subway_entrance',
           'texture_padding_ratio': 1.0,
+          # available: RGB (cycles render image), semseg_color (semantic segmentation colormap), instances (id map of traffic signs (including poles))
           'render_passes': ['rgb', 'semseg_color', 'instances'],
           'camera_position_offset': (0.220317, -0.0325, 0),
-          'image_resolution': (1280, 960)}
+          'image_resolution': (1280, 960),
+          'frame_range': (0, -1)}
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
