@@ -32,15 +32,17 @@ def get_keyframes(lanelets, config):
     return keyframes
 
 
-def setup_env(scene_rgb, scene_seg, env_config, resolution):
+def setup_env(scene_rgb, scene_seg, scene_lanes, env_config, resolution):
     bpy.ops.object.camera_add(view_align=True, location=(0, 0, 0), rotation=(0, 0, 0))
     bpy.context.active_object.name = 'render_camera'
     camera = bpy.data.objects['render_camera']
     # camera.data.angle_x = 91.2 * math.pi / 180
     scene_rgb.camera = camera
     scene_seg.camera = camera
+    scene_lanes.camera = camera
 
     scene_seg.render.engine = 'BLENDER_RENDER'
+    scene_lanes.render.engine = 'BLENDER_RENDER'
 
     scene_rgb.render.engine = 'CYCLES'
     scene_rgb.cycles.device = 'GPU'
@@ -102,10 +104,15 @@ def setup_env(scene_rgb, scene_seg, env_config, resolution):
     scene_seg.render.resolution_y = resolution[1]
     scene_seg.render.image_settings.compression = 0
     scene_seg.render.resolution_percentage = 100
+
+    scene_lanes.render.resolution_x = resolution[0]
+    scene_lanes.render.resolution_y = resolution[1]
+    scene_lanes.render.image_settings.compression = 0
+    scene_lanes.render.resolution_percentage = 100
     return camera, mapping_node
 
 
-def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config, add_vehicle=True,
+def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, camera, config, add_vehicle=True,
                      car_name='ego_vehicle'):
     keyframes = get_keyframes(lanelets, config)
 
@@ -119,6 +126,9 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
 
     if not os.path.isdir(os.path.join(output_path, 'traffic_sign_id')):
         os.makedirs(os.path.join(output_path, 'traffic_sign_id'))
+
+    if not os.path.isdir(os.path.join(output_path, 'lane_segmentation')):
+        os.makedirs(os.path.join(output_path, 'lane_segmentation'))
 
     seg_tree = scene_seg.node_tree
     seg_tree.nodes['Render Layers'].scene = scene_seg
@@ -163,12 +173,17 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, camera, config
         # activate diffuse pass only for scene
         if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
             bpy.context.screen.scene = scene_seg
-            if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
-                scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
+            scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
             bpy.ops.render.render(write_still=True)
             # blender seems to insist of plastering the frame number at the end of the file. fix manually
             os.rename(os.path.join(output_path, 'traffic_sign_id', 'Image.exr0001'),
                       os.path.join(output_path, 'traffic_sign_id', 'Image{:04d}.exr'.format(idx+1)))
+
+        if 'lanes' in config['render_passes']:
+            bpy.context.screen.scene = scene_lanes
+            scene_lanes.render.filepath = os.path.join(output_path, 'lane_segmentation',
+                                                       'Image{:04d}.png'.format(idx+1))
+            bpy.ops.render.render(write_still=True)
 
 
 def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_world_path, gazebo_sim_path, config):
@@ -195,7 +210,9 @@ def generate_blend(xml_content, target_dir, add_vehicle, output_dir, gazebo_worl
     for ramp in doc.ramp:
         special_objects.draw_ramp(ramp, mesh_basepath, scene_rgb, scene_segmentation)
 
-    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, getattr(env_configs, config['env_config']),
+    camera, mapping_node = setup_env(scene_rgb, scene_segmentation, scene_lanes,
+                                     getattr(env_configs, config['env_config']),
                                      config['image_resolution'])
-    render_keyframes(doc.lanelet, output_dir, scene_rgb, scene_segmentation, camera, config, add_vehicle=add_vehicle)
+    render_keyframes(doc.lanelet, output_dir, scene_rgb, scene_segmentation, scene_lanes,
+                     camera, config, add_vehicle=add_vehicle)
     # bpy.ops.wm.save_mainfile(os.path.join(output_dir, 'render_scene.blend'), compress=False)
