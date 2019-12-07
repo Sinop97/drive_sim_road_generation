@@ -2,9 +2,9 @@
 import sys
 import os
 import shutil
-from blender.renderer.blender import generate_blend
 # because blender does not want to have it otherwise -__-
 sys.path.append(os.getcwd())
+from blender.renderer.blender import generate_blend
 
 OUTPUT_DIR = 'blender-output'  # output directory
 FORCE_OUTPUT = True  # overwrite output if True
@@ -25,6 +25,7 @@ config = {'render_interval_distance': 0.05,
           'camera_position_offset': (0.220317, -0.0325, 0),
           'image_resolution': (1280, 960),
           'frame_range': (0, -1)}
+
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
