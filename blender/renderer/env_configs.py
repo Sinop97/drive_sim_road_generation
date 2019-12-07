@@ -23,3 +23,12 @@ subway_entrance = {
     'scale': (0.0001, 0.0001, 0.0001),
     'translation': (0.0, 0.0, -0.00001)
 }
+
+# image can be downloaded here https://hdrihaven.com/hdri/?c=indoor&h=wooden_lounge
+wooden_lounge = {
+    'image_path': '/home/mykyta/phoenix/wooden_lounge_4k.hdr',
+    'rotation': (0.0, 0.0, 0.0),# degrees
+    'scale': (0.0001, 0.0001, 0.0001),
+    'translation': (0.0, 0.0, -0.00001)
+}
+
