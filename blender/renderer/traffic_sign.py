@@ -84,7 +84,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
     # pass index for instance IDs
-    obj.data.use_auto_smooth = True
+    # obj.data.use_auto_smooth = True
     print('Sign {} setting pass index to {} and name to {}'.format(sign.type, sign_idx, sign_name))
     obj.pass_index = sign_idx
     bpy.data.materials[obj.material_slots[-1].material.name].pass_index = sign_idx
