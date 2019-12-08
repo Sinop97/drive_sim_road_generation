@@ -26,6 +26,7 @@ from commonroad.renderer.groundplane import get_lanelet_by_id
 from commonroad.renderer.groundplane import draw_rectangle
 from PIL import Image, ImageOps
 
+
 from blender.renderer.utils import generate_material_cycles, generate_material_internal_segmentation
 
 import bpy
@@ -36,6 +37,7 @@ from blender.renderer.segmentation_colormap import BACKGROUND_COLOR, DRIVABLE_AR
     ZEBRA_COLOR, BLOCKED_AREA_SEGMENTATION_COLOR, TRAFFIC_MARKING_SEGMENTATION_COLORS, INTERSECTION_COLOR, \
     LANE_MARKING_RIGHT_SIDE, LANE_MARKING_MIDDLE, LANE_MARKING_LEFT_SIDE
 from blender.renderer.segmentation_colormap import convert_to_one_range
+
 
 PIXEL_PER_UNIT = 500
 TILE_SIZE = 2048
@@ -157,7 +159,7 @@ def draw_drivable_segmentation(ctx, lanelet_list):
 
 
 # necessary because otherwise we have bleeding artifacts between the two road lanes
-def draw_midline_segmentation(ctx, lanelet_list, boundary_name):
+def draw_midline_gap_segmentation(ctx, lanelet_list, boundary_name):
     all_ids = [lanelet.id for lanelet in lanelet_list
         if getattr(lanelet, boundary_name).lineMarking is not None]
     while len(all_ids) > 0:
@@ -289,7 +291,7 @@ def draw_road_marking_segmentation(ctx, marking):
     if marking_visual.marker_image:
         # draw to temporary surface first to be able to change color
         ctx.save()
-        img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 72, 500) # todo: will have to change size dynamically if we add other markers in the future, for now all have this
+        img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 72, 500) # todo: will have to change size dynamically if we add other markers in the future, for now all have this size
         ctx_temp = cairo.Context(img)
         handle = Rsvg.Handle()
         svg = handle.new_from_file(marking_visual.marker_image.value)
@@ -298,6 +300,8 @@ def draw_road_marking_segmentation(ctx, marking):
         ctx.translate(marking.centerPoint.x, marking.centerPoint.y)
         ctx.rotate(marking.orientation)
         ctx.scale(0.001, 0.001)
+        ctx.scale(-1, 1)
+        ctx.translate(-72, 0) # todo: will have to change size dynamically if we add other markers in the future, for now all have this size
         ctx.mask_surface(img)
         ctx.stroke()
         ctx.restore()
@@ -398,11 +402,11 @@ def draw(doc, target_dir, scenes, obstacles, config):
         ctx.translate(- x * TILE_SIZE / PIXEL_PER_UNIT, - y * TILE_SIZE / PIXEL_PER_UNIT)
 
         draw_drivable_segmentation(ctx, doc.lanelet)
-        draw_midline_segmentation(ctx, doc.lanelet, "leftBoundary")
+        draw_midline_gap_segmentation(ctx, doc.lanelet, "leftBoundary")
         for obstacle in doc.obstacle:
             if obstacle.type == "segmentationIntersection":
                 for rect in obstacle.shape.rectangle:
-                    draw_rectangle(ctx, rect, color=INTERSECTION_COLOR)
+                    draw_rectangle(ctx, rect, color=convert_to_one_range(INTERSECTION_COLOR))
         for lanelet in doc.lanelet:
             draw_stop_lines_segmentation(ctx, lanelet)
             if lanelet.type == "zebraCrossing":
