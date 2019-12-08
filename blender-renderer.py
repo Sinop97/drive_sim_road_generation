@@ -4,6 +4,7 @@ import os
 import shutil
 # because blender does not want to have it otherwise -__-
 sys.path.append(os.getcwd())
+sys.path += ['/usr/local/lib/python3.5/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.5/dist-packages']
 from blender.renderer.blender import generate_blend
 
 OUTPUT_DIR = 'blender-output'  # output directory
