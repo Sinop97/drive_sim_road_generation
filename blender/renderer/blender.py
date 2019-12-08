@@ -144,6 +144,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     scene_seg.render.use_file_extension = False
 
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
+        name_idx = idx + config['frame_range'][0]
         bpy.context.screen.scene = scene_rgb
         scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
         scene_rgb.render.layers["RenderLayer"].use_pass_z = True
@@ -166,22 +167,22 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
                            camera_offset['z'])
         camera.rotation_euler = [-math.pi/2, math.pi, keyframe['orientation'] + math.pi/2]
         if 'rgb' in config['render_passes']:
-            scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(idx+1))
+            scene_rgb.render.filepath = os.path.join(output_path, 'rgb', 'Image{:04d}.png'.format(name_idx+1))
             bpy.ops.render.render(write_still=True)
 
         # activate diffuse pass only for scene
         if 'semseg_color' in config['render_passes'] or 'instances' in config['render_passes']:
             bpy.context.screen.scene = scene_seg
-            scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(idx+1))
+            scene_seg.render.filepath = os.path.join(output_path, 'semseg_color', 'Image{:04d}.png'.format(name_idx+1))
             bpy.ops.render.render(write_still=True)
             # blender seems to insist of plastering the frame number at the end of the file. fix manually
             os.rename(os.path.join(output_path, 'traffic_sign_id', 'Image.exr0001'),
-                      os.path.join(output_path, 'traffic_sign_id', 'Image{:04d}.exr'.format(idx+1)))
+                      os.path.join(output_path, 'traffic_sign_id', 'Image{:04d}.exr'.format(name_idx+1)))
 
         if 'lanes' in config['render_passes']:
             bpy.context.screen.scene = scene_lanes
             scene_lanes.render.filepath = os.path.join(output_path, 'lane_segmentation',
-                                                       'Image{:04d}.png'.format(idx+1))
+                                                       'Image{:04d}.png'.format(name_idx+1))
             bpy.ops.render.render(write_still=True)
 
 
