@@ -23,7 +23,7 @@ config = {'render_interval_distance': 0.05,
           'texture_padding_ratio': 1.0,
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
-          'render_passes': ['semseg_color'],
+          'render_passes': ['RGB', 'semseg_color', 'instances', 'lanes'],
           'camera_position_offset': (0.220317, -0.0325, 0),
           'image_resolution': (1280, 960),
           'frame_range': (0, -1),
