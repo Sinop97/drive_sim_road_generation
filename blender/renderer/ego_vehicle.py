@@ -19,5 +19,6 @@ def draw(gazebo_sim_path, scene_rgb, scene_seg, config):
     ego_vehicle.rotation_euler = (0, 0, math.pi)
     scene_rgb.objects.link(ego_vehicle)
 
-    duplicate_add_segmentation('seg-' + ego_vehicle_name, EGO_VEHICLE_COLOR, scene_seg)
+    if not config['use_vehicle_mask']:
+        duplicate_add_segmentation('seg-' + ego_vehicle_name, EGO_VEHICLE_COLOR, scene_seg)
     return ego_vehicle_name

@@ -8,6 +8,7 @@ from commonroad.renderer.ego_vehicle import get_start_lanelet, get_next_lanelet,
 import math
 from tqdm import tqdm
 from blender.renderer import env_configs
+import cv2
 
 
 def get_keyframes(lanelets, config):
@@ -143,6 +144,11 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
 
+    if config['use_vehicle_mask']:
+        vehicle_mask = cv2.imread(os.path.join('blender', 'renderer', 'segmentation_car_mask.png'),
+                                  cv2.IMREAD_UNCHANGED)
+        print('Shape of vehicle mask {}'.format(vehicle_mask.shape))
+
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         name_idx = idx + config['frame_range'][0]
         bpy.context.screen.scene = scene_rgb
@@ -156,11 +162,12 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
                             0)
             car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
-            seg_car = bpy.data.objects['seg-' + car_name]
-            seg_car.location = (keyframe['x'],
-                                keyframe['y'],
-                                0)
-            seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
+            if not config['use_vehicle_mask']:
+                seg_car = bpy.data.objects['seg-' + car_name]
+                seg_car.location = (keyframe['x'],
+                                    keyframe['y'],
+                                    0)
+                seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
         camera.location = (keyframe['x'] + camera_offset['x'],
                            keyframe['y'] + camera_offset['y'],
@@ -178,6 +185,12 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
             # blender seems to insist of plastering the frame number at the end of the file. fix manually
             os.rename(os.path.join(output_path, 'traffic_sign_id', 'Image.exr0001'),
                       os.path.join(output_path, 'traffic_sign_id', 'Image{:04d}.exr'.format(name_idx+1)))
+
+            # draw vehicle mask
+            if config['use_vehicle_mask']:
+                rendered_image = cv2.imread(scene_seg.render.filepath)
+                rendered_image[vehicle_mask[..., -1] != 0] = vehicle_mask[vehicle_mask[..., -1] != 0][..., :-1]
+                cv2.imwrite(scene_seg.render.filepath, rendered_image)
 
         if 'lanes' in config['render_passes']:
             bpy.context.screen.scene = scene_lanes

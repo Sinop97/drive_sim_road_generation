@@ -2,6 +2,7 @@
 import sys
 import os
 import shutil
+import json
 # because blender does not want to have it otherwise -__-
 sys.path.append(os.getcwd())
 sys.path += ['/usr/local/lib/python3.5/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.5/dist-packages']
@@ -22,10 +23,12 @@ config = {'render_interval_distance': 0.05,
           'texture_padding_ratio': 1.0,
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
-          'render_passes': ['rgb', 'semseg_color', 'instances', 'lanes'],
+          'render_passes': ['semseg_color'],
           'camera_position_offset': (0.220317, -0.0325, 0),
           'image_resolution': (1280, 960),
-          'frame_range': (0, -1)}
+          'frame_range': (0, -1),
+          # use a .png to render the vehicle
+          'use_vehicle_mask': True}
 
 
 if __name__ == "__main__":
@@ -36,6 +39,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     shutil.copy2(INPUT_FILE, OUTPUT_DIR)
+
+    with open(os.path.join(OUTPUT_DIR, 'config.json'), 'w', encoding='utf-8') as config_file:
+        json.dump(config, config_file, ensure_ascii=False, indent=4)
 
     with open(INPUT_FILE) as input_file:
         xml = input_file.read()
