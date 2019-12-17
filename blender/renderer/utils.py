@@ -58,17 +58,17 @@ def convert_mat_to_cycles(mat):
 
 
 def generate_material_internal_segmentation(material_name, filename):
-    bpy.data.textures.new(filename, type='IMAGE')
-    bpy.data.textures[filename].image = bpy.data.images[os.path.basename(filename)]
-    bpy.data.textures[filename].extension = 'CLIP'
-    bpy.data.textures[filename].use_interpolation = False
-    bpy.data.textures[filename].filter_size = 0.10
-    bpy.data.textures[filename].image.colorspace_settings.name = 'Raw'
+    bpy.data.textures.new(os.path.basename(filename), type='IMAGE')
+    bpy.data.textures[os.path.basename(filename)].image = bpy.data.images[os.path.basename(filename)]
+    bpy.data.textures[os.path.basename(filename)].extension = 'CLIP'
+    bpy.data.textures[os.path.basename(filename)].use_interpolation = False
+    bpy.data.textures[os.path.basename(filename)].filter_size = 0.10
+    bpy.data.textures[os.path.basename(filename)].image.colorspace_settings.name = 'Raw'
 
     bpy.data.materials.new(material_name)
     mat = bpy.data.materials[material_name]
     mat.use_shadeless = True
     slot = mat.texture_slots.add()
-    slot.texture = bpy.data.textures[filename]
+    slot.texture = bpy.data.textures[os.path.basename(filename)]
     slot.texture_coords = 'ORCO'
     return mat
