@@ -147,7 +147,6 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     if config['use_vehicle_mask']:
         vehicle_mask = cv2.imread(os.path.join('blender', 'renderer', 'segmentation_car_mask.png'),
                                   cv2.IMREAD_UNCHANGED)
-        print('Shape of vehicle mask {}'.format(vehicle_mask.shape))
 
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         name_idx = idx + config['frame_range'][0]

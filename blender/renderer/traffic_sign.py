@@ -11,6 +11,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     bpy.ops.wm.collada_import(filepath=os.path.join(sign_mesh_path,
                                                     SIGN_MESHES[sign.type]['mesh'] + '.dae'))
     sign_mesh_names = []
+    print('Selected objects: {}'.format(bpy.context.selected_objects))
     for obj in bpy.context.selected_objects:
         obj.name = obj.name.replace('Body', 'Seg-Sign/{}_{}'.format(sign.type, sign.id))
         # dae importer auto-renames the UV map, need to have uniform name to be able to merge
@@ -63,18 +64,13 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
 
     bpy.ops.object.select_all(action='DESELECT')
 
-    # one of the objects to join
-    ctx = bpy.context.copy()
-    ctx['active_object'] = bpy.data.objects[sign_mesh_names[0]]
-
-    obs = [bpy.data.objects[name] for name in sign_mesh_names]
-    ctx['selected_objects'] = obs
-
-    # we need the scene bases as well for joining
-    ctx['selected_editable_bases'] = [bpy.context.scene.object_bases[ob.name] for ob in obs]
-    bpy.ops.object.join(ctx)
+    bpy.context.scene.objects.active = bpy.data.objects[sign_mesh_names[0]]
+    for sign_mesh_name in sign_mesh_names:
+        bpy.data.objects[sign_mesh_name].select = True
+    bpy.ops.object.join()
 
     sign_name = 'Seg-Sign/{}_{}'.format(sign.type, sign.id)
+    ctx = bpy.context.copy()
     ctx['active_object'].name = sign_name
     obj = bpy.data.objects[sign_name]
 
@@ -84,8 +80,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     obj.scale[1] = 0.001
     obj.scale[2] = 0.001
     # pass index for instance IDs
-    # obj.data.use_auto_smooth = True
-    print('Sign {} setting pass index to {} and name to {}'.format(sign.type, sign_idx, sign_name))
+    obj.data.use_auto_smooth = True
     obj.pass_index = sign_idx
     bpy.data.materials[obj.material_slots[-1].material.name].pass_index = sign_idx
     scene_seg.objects.link(obj)

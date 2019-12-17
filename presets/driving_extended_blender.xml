@@ -53,27 +53,6 @@
                     <case w="1">
                         <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
                     </case>
-
-                    <case w="1">
-                        <!-- static obstacles -->
-                        <repeat min="1" max="5">
-                            <select>
-                                <case w="1">
-                                    <staticObstacle width="0.2" length="0.2"
-                                            position="-1" anchor="right" />
-                                </case>
-                                <case w="1">
-                                    <staticObstacle width="0.4" length="0.2"
-                                            position="-1" anchor="right" />
-                                </case>
-                                <case w="1">
-                                    <staticObstacle width="0.3" length="0.2"
-                                            position="0" anchor="right" />
-                                </case>
-                            </select>
-                            <line length="1" />
-                        </repeat>
-                    </case>
                 </select>
 
                 <select>

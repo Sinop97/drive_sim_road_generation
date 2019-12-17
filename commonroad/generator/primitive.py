@@ -524,14 +524,14 @@ class Intersection(Primitive):
             result.append(schema.trafficSign(type="stvo-209-10",
                 orientation=math.pi*1.5, centerPoint=schema.point(
                 x=config.road_width + 0.1, y=-config.road_width - 0.25)))
-            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
                                              orientation=math.pi,
                                              centerPoint=schema.point(x=(config.road_width +
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)
                                              ))
             if self._rule != 'yield':
-                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
+                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
                                                  orientation=math.pi * 0.5,
                                                  centerPoint=schema.point(x=-config.road_width - 0.25,
                                                                           y=-(config.road_width +
@@ -562,13 +562,13 @@ class Intersection(Primitive):
             result.append(schema.trafficSign(type="stvo-209-20",
                 orientation=math.pi*1.5, centerPoint=schema.point(
                 x=config.road_width + 0.1, y=-config.road_width - 0.25)))
-            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
+            result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
                                              orientation=math.pi,
                                              centerPoint=schema.point(x=(config.road_width +
                                                                          config.turn_road_marking_width) * 0.5,
                                                                       y=-config.road_width - 0.25)))
             if self._rule != 'yield':
-                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_left,
+                result.append(schema.roadMarking(type=schema.roadMarkingType.turn_right,
                                                  orientation=math.pi * 1.5,
                                                  centerPoint=schema.point(x=config.road_width + 0.25,
                                                                           y=(config.road_width +

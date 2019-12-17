@@ -300,8 +300,8 @@ def draw_road_marking_segmentation(ctx, marking):
         ctx.translate(marking.centerPoint.x, marking.centerPoint.y)
         ctx.rotate(marking.orientation)
         ctx.scale(0.001, 0.001)
-        ctx.scale(-1, 1)
-        ctx.translate(-72, 0) # todo: will have to change size dynamically if we add other markers in the future, for now all have this size
+        # ctx.scale(-1, 1)
+        # ctx.translate(-72, 0) # todo: will have to change size dynamically if we add other markers in the future, for now all have this size
         ctx.mask_surface(img)
         ctx.stroke()
         ctx.restore()

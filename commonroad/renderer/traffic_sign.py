@@ -3,7 +3,7 @@ SIGN_MESHES = {
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
     "20_zone_beginn": {"mesh": "20zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
-    "40_zone_beginn": {"mesh": "30zone_start", "collision_box_size": "0.11 0.15 0.29",
+    "40_zone_beginn": {"mesh": "40zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
     "50_zone_beginn": {"mesh": "50zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
