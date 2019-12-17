@@ -2,7 +2,7 @@ import math
 
 # image can be downloaded here: https://hdrihaven.com/hdri/?h=colorful_studio
 colorful_studio_back = {
-    'image_path': '/home/mykyta/Downloads/colorful_studio_2k.hdr',
+    'image_path': '/home/mykyta/Downloads/colorful_studio_4k.hdr',
     'rotation': (0.0, 0.0, 70/180.0 * math.pi),  # degrees
     'scale': (0.001, 0.001, 0.001),
     'translation': (0.0, 0.0, 0.0)
