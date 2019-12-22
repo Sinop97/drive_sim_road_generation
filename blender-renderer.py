@@ -19,16 +19,14 @@ GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim pack
 # blender does not less us parse arguments
 config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
-          'env_config': 'machine_shop',
+          'env_config': 'subway_entrance',
           'texture_padding_ratio': 1.0,
           # choose camera to render from, available: realsense, top
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
-          'render_passes': ['rgb', 'semseg_color', 'instances', 'lanes'],
-          # rotation of the cameras around the Y axis (lateral car axis) in degrees
-          'camera_rotation': [31],
+          'render_passes': ['rgb', 'semseg_color', 'instances'],
           # resolution provided separately for each camera
-          'frame_range': (0, 1),
+          'frame_range': (0, -1),
           # use a .png to render the vehicle -> has to be re-generated for each camera position
           'use_vehicle_mask': False,
           'cameras': [{'name': 'top',
@@ -38,19 +36,22 @@ config = {'render_interval_distance': 0.05,
                        'image_resolution': (2048, 1536),
                        # used if camera_mask is set to True
                        'segmentation_mask': 'top_segmentation_mask.png',
-                       'sensor_width': 7.11,  # 1/1.8 inch on IDS camera
-                       'focal_length': 1.7  # 1.7 mm on Theia
+                       'sensor_width': 7.18,  # 1/1.8 inch on IDS camera
+                       'sensor_height': 5.32,  # 1/1.8 inch on IDS camera
+                       'focal_length': 1.7,  # 1.7 mm on Theia
                        },
                       # from: http://robotsforroboticists.com/wordpress/wp-content/uploads/2019/09/realsense-sep-2019.pdf
                       {'name': 'realsense',
-                       'position_offset': {'x': -0.220317, 'y': -0.0325, 'z': 0.11},
+                       'position_offset': {'x': -0.220317, 'y': 0.0325, 'z': 0.11},
                        # rotation of the cameras around the Y axis (lateral car axis) in degrees
                        'rotation': 0,
                        'image_resolution': (1280, 960),
                        # used if camera_mask is set to True
                        'segmentation_mask': 'realsense_segmentation_mask.png',
                        'sensor_width': 6.4,  # 1/2 inch, see above for source
-                       'focal_length': 1.93  # see above for source
+                       'sensor_height': 4.8,  # 1/2 inch, see above for source
+                       # 'focal_length': 1.93,  -> documentation above looks incorrect in this regard, use horizontal FOV
+                       'horizontal_fov': 69.4  # unit: degrees
                        }
                       ]
           }

@@ -95,9 +95,17 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
         cam_name = camera_config['name']
         bpy.data.cameras[bpy.context.active_object.name].name = cam_name
         bpy.context.active_object.name = cam_name
-        bpy.data.cameras[cam_name].lens = camera_config['focal_length']
+        bpy.data.cameras[cam_name].clip_start = 0.05  # to prevent clipping of vehicle body
         bpy.data.cameras[cam_name].sensor_fit = 'HORIZONTAL'
         bpy.data.cameras[cam_name].sensor_width = camera_config['sensor_width']
+        bpy.data.cameras[cam_name].sensor_height = camera_config['sensor_height']
+        if 'focal_length' in camera_config:
+            bpy.data.cameras[cam_name].lens = camera_config['focal_length']
+        elif 'horizontal_fov' in camera_config:
+            bpy.data.cameras[cam_name].lens_unit = 'FOV'
+            bpy.data.objects[cam_name].data.angle_x = camera_config['horizontal_fov'] * math.pi/180
+        else:
+            print('No lens config provided for camera \'{}\', using defaults'.format(cam_name))
 
         camera_path = os.path.join(output_path, cam_name)
 
