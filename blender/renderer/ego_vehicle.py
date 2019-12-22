@@ -14,7 +14,7 @@ def draw(gazebo_sim_path, scene_rgb, scene_seg, config):
     bpy.context.active_object.name = ego_vehicle_name
     ego_vehicle = bpy.data.objects[ego_vehicle_name]
     ego_vehicle.data.use_auto_smooth = True
-    bpy.context.scene.cursor_location = config['camera_position_offset']
+    bpy.context.scene.cursor_location = (0, 0, 0)
     bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
     ego_vehicle.rotation_euler = (0, 0, math.pi)
     scene_rgb.objects.link(ego_vehicle)

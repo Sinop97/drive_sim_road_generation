@@ -8,7 +8,7 @@ sys.path.append(os.getcwd())
 sys.path += ['/usr/local/lib/python3.5/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.5/dist-packages']
 from blender.renderer.blender import generate_blend
 
-OUTPUT_DIR = 'blender-output'  # output directory
+OUTPUT_DIR = 'blender-output-new'  # output directory
 FORCE_OUTPUT = True  # overwrite output if True
 ADD_VEHICLE = True  # render ego-vehicle in the frames
 INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
@@ -21,14 +21,39 @@ config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
           'env_config': 'machine_shop',
           'texture_padding_ratio': 1.0,
+          # choose camera to render from, available: realsense, top
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
           'render_passes': ['rgb', 'semseg_color', 'instances', 'lanes'],
-          'camera_position_offset': (0.220317, -0.0325, 0),
-          'image_resolution': (1280, 960),
-          'frame_range': (0, -1),
-          # use a .png to render the vehicle
-          'use_vehicle_mask': True}
+          # rotation of the cameras around the Y axis (lateral car axis) in degrees
+          'camera_rotation': [31],
+          # resolution provided separately for each camera
+          'frame_range': (0, 1),
+          # use a .png to render the vehicle -> has to be re-generated for each camera position
+          'use_vehicle_mask': False,
+          'cameras': [{'name': 'top',
+                       'position_offset': {'x': -0.126113, 'y': 0, 'z': 0.231409},
+                       # rotation of the cameras around the Y axis (lateral car axis) in degrees
+                       'rotation': 31,
+                       'image_resolution': (2048, 1536),
+                       # used if camera_mask is set to True
+                       'segmentation_mask': 'top_segmentation_mask.png',
+                       'sensor_width': 7.11,  # 1/1.8 inch on IDS camera
+                       'focal_length': 1.7  # 1.7 mm on Theia
+                       },
+                      # from: http://robotsforroboticists.com/wordpress/wp-content/uploads/2019/09/realsense-sep-2019.pdf
+                      {'name': 'realsense',
+                       'position_offset': {'x': -0.220317, 'y': -0.0325, 'z': 0.11},
+                       # rotation of the cameras around the Y axis (lateral car axis) in degrees
+                       'rotation': 0,
+                       'image_resolution': (1280, 960),
+                       # used if camera_mask is set to True
+                       'segmentation_mask': 'realsense_segmentation_mask.png',
+                       'sensor_width': 6.4,  # 1/2 inch, see above for source
+                       'focal_length': 1.93  # see above for source
+                       }
+                      ]
+          }
 
 
 if __name__ == "__main__":
