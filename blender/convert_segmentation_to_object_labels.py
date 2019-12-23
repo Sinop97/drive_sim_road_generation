@@ -5,7 +5,8 @@ import logging
 import csv
 import cv2
 import numpy as np
-from blender.renderer.segmentation_colormap import SIGN_TO_COLOR
+from blender.renderer.segmentation_colormap import SIGN_TO_COLOR, SIGN_TO_CLASSID
+import argparse
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
 
                 for color in colors:
                     if tuple(color)[::-1] in COLOR_TO_SIGN:
-                        traffic_sign = COLOR_TO_SIGN[tuple(color)[::-1]]
+                        traffic_sign = SIGN_TO_CLASSID[COLOR_TO_SIGN[tuple(color)[::-1]]]
                         unique_positions = np.argwhere(location_mask)
 
                         x1 = np.min(unique_positions[:, 0])
@@ -77,7 +78,7 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
 
                             if draw_debug:
                                 cv2.rectangle(color_image, (y1, x1), (y2, x2), [int(val) for val in color])
-                                cv2.putText(color_image, traffic_sign, (y1, x1), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                                cv2.putText(color_image, str(traffic_sign), (y1, x1), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                                             [int(val) for val in color])
                         break  # skip the case where multiple traffic signs are inside one for some reason
 
@@ -88,6 +89,11 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate phoenix-style annotations from synthetic segmantation & '
+                                                 'sign id')
+    parser.add_argument('path', type=str, nargs=1,
+                        help='Filepath, should contain the \'semseg_color\' and \'traffic_sign_id\' sub-paths')
+    args = parser.parse_args()
+
     # change the pixel size accordingly to remove too small signs (unit is square pixels)
-    convert_dataset_trafficsignid_only('/home/mykyta/drive_sim_road_generation/blender-output',
-                                       draw_debug=True, min_pixel_size=50)
+    convert_dataset_trafficsignid_only(args.path[0], draw_debug=True, min_pixel_size=50)
