@@ -37,7 +37,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     scene_rgb.objects.link(obj)
 
     for idx, name in enumerate(sign_mesh_names[:-1]):
-        add_segmentation_mat(SIGN_BASE_COLOR, "Seg-Mat/Sign-Base/{}_{}_{}".format(sign.type, sign.id, idx),
+        add_segmentation_mat(SIGN_BASE_COLOR, "Seg-Mat/Seg-Sign-Base/{}_{}_{}".format(sign.type, sign.id, idx),
                              bpy.data.objects[name])
 
     # for segmentation: label the forward-facing faces of label mesh only
@@ -58,7 +58,7 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
 
     mat = bpy.data.materials.new(name="Seg-Mat/Seg-Sign-Base/{}_{}_{}-backside_color".format(sign.type, sign.id,
                                                                                        len(sign_mesh_names)-1))
-    mat.diffuse_color = convert_to_one_range(convert_to_one_range(SIGN_BASE_COLOR))
+    mat.diffuse_color = convert_to_one_range(SIGN_BASE_COLOR)
     mat.use_shadeless = True
     obj.data.materials.append(mat)
 
@@ -82,5 +82,6 @@ def draw(sign, sign_mesh_path, scene_rgb, scene_seg, sign_idx=0):
     # pass index for instance IDs
     obj.data.use_auto_smooth = True
     obj.pass_index = sign_idx
-    bpy.data.materials[obj.material_slots[-1].material.name].pass_index = sign_idx
+    last_mat_name = sorted([slot.material.name for slot in obj.material_slots])[-1]
+    bpy.data.materials[last_mat_name].pass_index = sign_idx    
     scene_seg.objects.link(obj)
