@@ -47,7 +47,7 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
 
     with open(gt_path, 'w') as csvfile:
         gt_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        gt_writer.writerow(['Image Name', 'x1', 'x2', 'y1', 'y2', 'classid'])
+        gt_writer.writerow(['Filename', 'Roi.X1', 'Roi.X2', 'Roi.Y1', 'Roi.Y2', 'ClassId'])
         for semantic_name, instance_name in tqdm(zip(segmentation_images, instance_images)):
             semantic_image = cv2.imread(semantic_name)
             instance_image = cv2.imread(instance_name)[..., 0]
@@ -73,8 +73,8 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
                         y2 = np.max(unique_positions[:, 1])
 
                         if (x2-x1) + (y2-y1) > min_pixel_size:
-                            # use instance name to get png of image path
-                            gt_writer.writerow([os.path.basename(semantic_name).split('.')[0], x1, x2, y1, y2, traffic_sign])
+                            # we switch around the y and x coordinates here as this was done when hand-labeling
+                            gt_writer.writerow([os.path.basename(semantic_name), y1, y2, x1, x2, traffic_sign])
 
                             if draw_debug:
                                 cv2.rectangle(color_image, (y1, x1), (y2, x2), [int(val) for val in color])
