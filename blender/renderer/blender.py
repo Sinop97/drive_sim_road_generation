@@ -143,6 +143,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
 
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
+    scene_seg.display_settings.display_device = 'None'
 
     if config['use_vehicle_mask']:
         vehicle_mask = cv2.imread(os.path.join('blender', 'renderer', 'segmentation_car_mask.png'),
