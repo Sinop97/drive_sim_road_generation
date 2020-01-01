@@ -59,28 +59,30 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
             # find unique combinations of traffic sign id labels and cluster them, put bbs around and write
             for traffic_sign_id in np.sort(np.unique(instance_image))[1:]:
                 location_mask = (instance_image == traffic_sign_id)
-                colors = np.unique(semantic_image[location_mask], axis=0)
+                colors, counts = np.unique(semantic_image[location_mask], axis=0, return_counts=True)
+                dominant_color = colors[np.argsort(-counts)][0]
 
-                for color in colors:
-                    if tuple(color)[::-1] in COLOR_TO_SIGN:
-                        traffic_sign = SIGN_TO_CLASSID[COLOR_TO_SIGN[tuple(color)[::-1]]]
-                        unique_positions = np.argwhere(location_mask)
+                if tuple(dominant_color)[::-1] in COLOR_TO_SIGN:
+                    traffic_sign = SIGN_TO_CLASSID[COLOR_TO_SIGN[tuple(dominant_color)[::-1]]]
+                    unique_positions = np.argwhere(location_mask)
 
-                        x1 = np.min(unique_positions[:, 0])
-                        x2 = np.max(unique_positions[:, 0])
+                    x1 = np.min(unique_positions[:, 0])
+                    x2 = np.max(unique_positions[:, 0])
 
-                        y1 = np.min(unique_positions[:, 1])
-                        y2 = np.max(unique_positions[:, 1])
+                    y1 = np.min(unique_positions[:, 1])
+                    y2 = np.max(unique_positions[:, 1])
 
-                        if (x2-x1) + (y2-y1) > min_pixel_size:
-                            # we switch around the y and x coordinates here as this was done when hand-labeling
-                            gt_writer.writerow([os.path.basename(semantic_name), y1, y2, x1, x2, traffic_sign])
+                    if (x2-x1) + (y2-y1) > min_pixel_size:
+                        # we switch around the y and x coordinates here as this was done when hand-labeling
+                        gt_writer.writerow([os.path.basename(semantic_name), y1, y2, x1, x2, traffic_sign])
 
-                            if draw_debug:
-                                cv2.rectangle(color_image, (y1, x1), (y2, x2), [int(val) for val in color])
-                                cv2.putText(color_image, str(traffic_sign), (y1, x1), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                                            [int(val) for val in color])
-                        break  # skip the case where multiple traffic signs are inside one for some reason
+                        if draw_debug:
+                            cv2.rectangle(color_image, (y1, x1), (y2, x2), [int(val) for val in dominant_color])
+                            cv2.putText(color_image, str(traffic_sign), (y1, x1), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                                        [int(val) for val in dominant_color])
+                else:
+                    logging.warn('Dominant color {} of sign with type: {} is not in the color'
+                                 ' dict, skipping!'.format(dominant_color, traffic_sign_id))
 
             if draw_debug:
                 cv2.destroyAllWindows()
