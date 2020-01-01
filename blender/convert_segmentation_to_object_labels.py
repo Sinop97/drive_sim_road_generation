@@ -81,8 +81,8 @@ def convert_dataset_trafficsignid_only(base_path, draw_debug=False, min_pixel_si
                             cv2.putText(color_image, str(traffic_sign), (y1, x1), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                                         [int(val) for val in dominant_color])
                 else:
-                    logging.warn('Dominant color {} of sign with type: {} is not in the color'
-                                 ' dict, skipping!'.format(dominant_color, traffic_sign_id))
+                    logging.warning('Image: {}, Dominant color {} of sign with id: {} is not in the color'
+                                    ' dict, skipping!'.format(os.path.basename(semantic_name), dominant_color, traffic_sign_id))
 
             if draw_debug:
                 cv2.destroyAllWindows()
@@ -98,4 +98,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # change the pixel size accordingly to remove too small signs (unit is square pixels)
-    convert_dataset_trafficsignid_only(args.path[0], draw_debug=True, min_pixel_size=50)
+    convert_dataset_trafficsignid_only(args.path[0], draw_debug=False, min_pixel_size=50)
