@@ -103,8 +103,8 @@ SIGN_TO_CLASSID = {
  'ende_70_zone': 101,
  'ende_80_zone': 101,
  'ende_90_zone': 101,
- 'stvo-108-10': 108,
- 'stvo-110-10': 107,  # actually should be 110
+ 'stvo-108-10': 107,
+ 'stvo-110-10': 108,  # actually should be 110
  'stvo-205': 13,
  'stvo-206': 14,
  'stvo-208': 100,
