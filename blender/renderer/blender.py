@@ -80,7 +80,7 @@ def setup_env(scene_rgb, scene_seg, scene_lanes, env_config, resolution):
     scene_seg.render.layers["RenderLayer"].use_pass_z = False
     scene_seg.render.layers["RenderLayer"].use_pass_diffuse = False
     scene_seg.render.layers["RenderLayer"].use_pass_color = True
-    scene_seg.render.layers["RenderLayer"].use_pass_object_index =   False
+    scene_seg.render.layers["RenderLayer"].use_pass_object_index = False
     scene_seg.render.layers["RenderLayer"].use_pass_material_index = True
     scene_seg.use_nodes = True
     seg_tree = scene_seg.node_tree
@@ -144,6 +144,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
     scene_seg.display_settings.display_device = 'None'
+    scene_lanes.display_settings.display_device = 'None'
 
     if config['use_vehicle_mask']:
         vehicle_mask = cv2.imread(os.path.join('blender', 'renderer', 'segmentation_car_mask.png'),
