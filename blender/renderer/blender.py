@@ -139,6 +139,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     scene_seg.display_settings.display_device = 'None'
     scene_lanes.display_settings.display_device = 'None'
 
+    bpy.context.user_preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         name_idx = idx + config['frame_range'][0]
         for cam_idx, camera_config in enumerate(config['cameras']):
