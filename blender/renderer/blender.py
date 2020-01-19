@@ -187,8 +187,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
                                         0)
                     seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
 
-            camera.location = (keyframe['x'] + camera_offset['x'],
-                               keyframe['y'] + camera_offset['y'],
+            camera.location = (keyframe['x'] + camera_offset['x'] * math.cos(keyframe['orientation']) - camera_offset['y'] * math.sin(keyframe['orientation']),
+                               keyframe['y'] + camera_offset['x'] * math.sin(keyframe['orientation']) + camera_offset['y'] * math.cos(keyframe['orientation']),
                                camera_offset['z'])
             camera.rotation_euler = [-math.pi/2 - camera_orientation_y, math.pi, keyframe['orientation'] + math.pi/2]
             if 'rgb' in config['render_passes']:
