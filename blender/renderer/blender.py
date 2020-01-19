@@ -146,6 +146,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
     scene_seg.display_settings.display_device = 'None'
     scene_lanes.display_settings.display_device = 'None'
 
+    bpy.context.user_preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+
     if config['use_vehicle_mask']:
         vehicle_mask = cv2.imread(os.path.join('blender', 'renderer', 'segmentation_car_mask.png'),
                                   cv2.IMREAD_UNCHANGED)
