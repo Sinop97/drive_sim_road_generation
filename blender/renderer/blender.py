@@ -136,6 +136,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
 
     scene_rgb.render.use_file_extension = False
     scene_seg.render.use_file_extension = False
+    scene_seg.display_settings.display_device = 'None'
+    scene_lanes.display_settings.display_device = 'None'
 
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         name_idx = idx + config['frame_range'][0]
