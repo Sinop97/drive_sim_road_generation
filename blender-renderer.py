@@ -25,9 +25,9 @@ config = {'render_interval_distance': 0.05,
           # choose camera to render from, available: realsense, top
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
-          'render_passes': ['rgb', 'semseg_color', 'instances', 'lanes'],
+          'render_passes': ['semseg_color', 'instances', 'lanes'],
           # resolution provided separately for each camera
-          'frame_range': (0, -1),
+          'frame_range': (16, -1),
           # use a .png to render the vehicle -> has to be re-generated for each camera position
           'use_vehicle_mask': False,
           'cameras': [{'name': 'top',
