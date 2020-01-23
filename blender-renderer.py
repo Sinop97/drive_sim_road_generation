@@ -30,6 +30,8 @@ config = {'render_interval_distance': 0.05,
           'frame_range': (16, -1),
           # use a .png to render the vehicle -> has to be re-generated for each camera position
           'use_vehicle_mask': True,
+          "add_random_jitter": True,
+          "random_jitter": {'x': 0.03, 'y': 0.05, 'angle': 20},   # angle in degrees
           'cameras': [{'name': 'top',
                        'position_offset': {'x': -0.126113, 'y': 0, 'z': 0.231409},
                        # rotation of the cameras around the Y axis (lateral car axis) in degrees

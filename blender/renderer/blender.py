@@ -8,6 +8,7 @@ from commonroad.renderer.ego_vehicle import get_start_lanelet, get_next_lanelet,
 import math
 from tqdm import tqdm
 from blender.renderer import env_configs
+import random
 import cv2
 
 
@@ -175,23 +176,31 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
             scene_rgb.render.layers["RenderLayer"].use_pass_combined = True
             scene_rgb.render.layers["RenderLayer"].use_pass_z = True
             scene_rgb.render.layers["RenderLayer"].use_pass_diffuse = False
+
+            pos_x = keyframe['x']
+            pos_y = keyframe['y']
+            if config['add_random_jitter']:
+                pos_x += random.uniform(-config['random_jitter']['x'], config['random_jitter']['x'])
+                pos_y += random.uniform(-config['random_jitter']['y'], config['random_jitter']['y'])
+                orientation = keyframe['orientation'] + random.uniform(-config['random_jitter']['angle'],
+                                                                       config['random_jitter']['angle']) * math.pi/180
+
             if add_vehicle:
                 car = bpy.data.objects[car_name]
-                car.location = (keyframe['x'],
-                                keyframe['y'],
+                car.location = (pos_x,
+                                pos_y,
                                 0)
-                car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
+                car.rotation_euler = [0, 0, orientation + math.pi]
 
                 if not config['use_vehicle_mask']:
                     seg_car = bpy.data.objects['seg-' + car_name]
-                    seg_car.location = (keyframe['x'],
-                                        keyframe['y'],
+                    seg_car.location = (pos_x,
+                                        pos_y,
                                         0)
-                    seg_car.rotation_euler = [0, 0, keyframe['orientation'] + math.pi]
+                    seg_car.rotation_euler = [0, 0, orientation + math.pi]
 
-            orientation = keyframe['orientation']
-            camera.location = (keyframe['x'] + camera_offset['x'] * math.cos(orientation) + camera_offset['y'] * math.sin(orientation),
-                               keyframe['y'] + camera_offset['x'] * math.sin(orientation) + camera_offset['y'] * math.cos(orientation),
+            camera.location = (pos_x + camera_offset['x'] * math.cos(orientation) + pos_y * math.sin(orientation),
+                               pos_x + camera_offset['x'] * math.sin(orientation) + pos_y * math.cos(orientation),
                                camera_offset['z'])
             camera.rotation_euler = [-math.pi/2 - camera_orientation_y, math.pi, keyframe['orientation'] + math.pi/2]
             if 'rgb' in config['render_passes']:
