@@ -39,3 +39,13 @@ machine_shop = {
     'scale': (0.0001, 0.0001, 0.0001),
     'translation': (0.0, 0.0, -0.00001)
 }
+
+# image can be downloaded here: https://hdrihaven.com/hdri/?c=indoor&h=industrial_pipe_and_valve_01
+industrial_pipe = {
+    'image_path': '/home/mykyta/phoenix/industrial_pipe_and_valve_01_4k.hdr',
+    'rotation': (0.0, 0.0, 30/180.0 * math.pi),  # degrees
+    'scale': (0.001, 0.001, 0.001),
+    'translation': (0.0, 0.0, 0.0)
+}
+
+
