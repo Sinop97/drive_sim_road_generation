@@ -144,6 +144,29 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
 
     for idx, keyframe in enumerate(tqdm(keyframes[config['frame_range'][0]: config['frame_range'][1]])):
         name_idx = idx + config['frame_range'][0]
+        pos_x = keyframe['x']
+        pos_y = keyframe['y']
+        orientation = keyframe['orientation']
+        if config['add_random_jitter']:
+            pos_x = keyframe['x'] + random.uniform(-config['random_jitter']['x'], config['random_jitter']['x'])
+            pos_y = keyframe['y'] + random.uniform(-config['random_jitter']['y'], config['random_jitter']['y'])
+            orientation = keyframe['orientation'] + random.uniform(-config['random_jitter']['angle'],
+                                                                   config['random_jitter']['angle']) * math.pi / 180
+
+        if add_vehicle:
+            car = bpy.data.objects[car_name]
+            car.location = (pos_x,
+                            pos_y,
+                            0)
+            car.rotation_euler = [0, 0, orientation + math.pi]
+
+            if not config['use_vehicle_mask']:
+                seg_car = bpy.data.objects['seg-' + car_name]
+                seg_car.location = (pos_x,
+                                    pos_y,
+                                    0)
+                seg_car.rotation_euler = [0, 0, orientation + math.pi]
+
         for cam_idx, camera_config in enumerate(config['cameras']):
             cam_name = camera_config['name']
             print('Rendering camera: {}'.format(cam_name))
@@ -177,30 +200,8 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
             scene_rgb.render.layers["RenderLayer"].use_pass_z = True
             scene_rgb.render.layers["RenderLayer"].use_pass_diffuse = False
 
-            pos_x = keyframe['x']
-            pos_y = keyframe['y']
-            if config['add_random_jitter']:
-                pos_x += random.uniform(-config['random_jitter']['x'], config['random_jitter']['x'])
-                pos_y += random.uniform(-config['random_jitter']['y'], config['random_jitter']['y'])
-                orientation = keyframe['orientation'] + random.uniform(-config['random_jitter']['angle'],
-                                                                       config['random_jitter']['angle']) * math.pi/180
-
-            if add_vehicle:
-                car = bpy.data.objects[car_name]
-                car.location = (pos_x,
-                                pos_y,
-                                0)
-                car.rotation_euler = [0, 0, orientation + math.pi]
-
-                if not config['use_vehicle_mask']:
-                    seg_car = bpy.data.objects['seg-' + car_name]
-                    seg_car.location = (pos_x,
-                                        pos_y,
-                                        0)
-                    seg_car.rotation_euler = [0, 0, orientation + math.pi]
-
-            camera.location = (pos_x + camera_offset['x'] * math.cos(orientation) + pos_y * math.sin(orientation),
-                               pos_x + camera_offset['x'] * math.sin(orientation) + pos_y * math.cos(orientation),
+            camera.location = (pos_x + camera_offset['x'] * math.cos(orientation) - camera_offset['y'] * math.sin(orientation),
+                               pos_y + camera_offset['x'] * math.sin(orientation) + camera_offset['y'] * math.cos(orientation),
                                camera_offset['z'])
             camera.rotation_euler = [-math.pi/2 - camera_orientation_y, math.pi, orientation + math.pi/2]
             if 'rgb' in config['render_passes']:

@@ -9,7 +9,7 @@ sys.path += ['/usr/local/lib/python3.5/dist-packages', '/usr/lib/python3/dist-pa
              '/usr/lib/python3.5/dist-packages']
 from blender.renderer.blender import generate_blend
 
-OUTPUT_DIR = 'blender-output-new'  # output directory
+OUTPUT_DIR = '/data_2/synthetic_data/rendered_scenes/new_cameras/industrial-pipe-1-with-jitter'  # output directory
 FORCE_OUTPUT = True  # overwrite output if True
 ADD_VEHICLE = True  # render ego-vehicle in the frames
 INPUT_FILE = 'driving-scenario.xml'  # input CommonRoad file
@@ -20,18 +20,18 @@ GAZEBO_SIM_PATH = '../drive_gazebo_sim'  # location of the drive_gazebo_sim pack
 # blender does not less us parse arguments
 config = {'render_interval_distance': 0.05,
           'groundplane_shader_type': 'ShaderNodeBsdfGlossy',
-          'env_config': 'subway_entrance',
+          'env_config': 'industrial_pipe',
           'texture_padding_ratio': 1.0,
           # choose camera to render from, available: realsense, top
           # available: RGB (cycles render image), semseg_color (semantic segmentation colormap)
           # instances (id map of traffic signs (including poles)), lanes (DRIVABLE lane segmentation, only left/right)
           'render_passes': ['rgb', 'semseg_color', 'instances', 'lanes'],
           # resolution provided separately for each camera
-          'frame_range': (16, -1),
+          'frame_range': (0, -1),
           # use a .png to render the vehicle -> has to be re-generated for each camera position
           'use_vehicle_mask': True,
-          "add_random_jitter": True,
-          "random_jitter": {'x': 0.03, 'y': 0.05, 'angle': 20},   # angle in degrees
+          'add_random_jitter': True,
+          "random_jitter": {'x': 0.05, 'y': 0.05, 'angle': 25},   # angle in degrees
           'cameras': [{'name': 'top',
                        'position_offset': {'x': -0.126113, 'y': 0, 'z': 0.231409},
                        # rotation of the cameras around the Y axis (lateral car axis) in degrees
