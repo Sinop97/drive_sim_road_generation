@@ -202,7 +202,7 @@ def render_keyframes(lanelets, output_path, scene_rgb, scene_seg, scene_lanes, c
             camera.location = (pos_x + camera_offset['x'] * math.cos(orientation) + pos_y * math.sin(orientation),
                                pos_x + camera_offset['x'] * math.sin(orientation) + pos_y * math.cos(orientation),
                                camera_offset['z'])
-            camera.rotation_euler = [-math.pi/2 - camera_orientation_y, math.pi, keyframe['orientation'] + math.pi/2]
+            camera.rotation_euler = [-math.pi/2 - camera_orientation_y, math.pi, orientation + math.pi/2]
             if 'rgb' in config['render_passes']:
                 scene_rgb.render.filepath = os.path.join(camera_path, 'rgb', 'Image{:04d}.png'.format(name_idx+1))
                 bpy.ops.render.render(write_still=True)
