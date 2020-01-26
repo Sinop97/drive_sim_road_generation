@@ -48,4 +48,12 @@ industrial_pipe = {
     'translation': (0.0, 0.0, 0.0)
 }
 
+# image can be downloaded here: https://hdrihaven.com/hdri/?c=indoor&h=autoshop_01
+autoshop = {
+    'image_path': '/home/ubuntu/Downloads/autoshop_01_4k.hdr',
+    'rotation': (0.0, 0.0, 10/180.0 * math.pi),  # degrees
+    'scale': (0.001, 0.001, 0.001),
+    'translation': (0.0, 0.0, 0.0)
+}
+
 
