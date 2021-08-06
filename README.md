@@ -1,4 +1,7 @@
-# Randomized Road Generation and 3D Visualization
+# Road generation to use in a simulation for semantic segmentation
+## General
+
+This project extends the original [TUM](https://github.com/tum-phoenix/drive_sim_road_generation) project for our use case and implements new different objects in the Road Generator. It is a part of the master "Applied Computer Science" at Esslingen University of Applied Sciences and handles the theme "semantic segmentation for an autonomous model vehicle".
 
 ## Installation
 
@@ -61,9 +64,7 @@ cd world
 gazebo world.sdf
 ```
 
-
-
-## Extension
+### Extension
 Merge the raw world with the colored world:
 
 ```
