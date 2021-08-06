@@ -27,30 +27,41 @@ export GAZEBO_PLUGIN_PATH=`pwd`:$GAZEBO_PLUGIN_PATH
 Additionally, install the font located in the commonroad/renderer/fonts subfolder, which is needed to draw speed limit numbers.
 
 ## Usage
+### Generating the Road
+
+```
+./road-generator.py presets/driving.xml --add_color
+```
+Arguments:
+
+--add_color or -ac: color the world to create labels in the next step (optional)
+
+### Rendering the Road
 ```
 ./gazebo-renderer.py driving-scenario.xml -o world -d 40 --add_color --concatenate_tiles
 ```
-Parameter:
+Arguments:
 
---distance or -d: y-distance to origin 
+--distance or -d: y-distance to world's origin  
 
 --add_color or -ac: color the world to create labels in the next step (optional)
 
 --concatenate_tiles or -ct: concatenate the tiles to close the gaps between the tiles (optional)
 
+
+Road generation and rendering can also be done in a single step:
+```
+./road-generator.py presets/driving.xml | ./gazebo-renderer.py -o world
+```
+
 View in Gazbeo:
 (Make sure the plugin's build folder is set as environment variable `GAZEBO_PLUGIN_PATH`)
-
 ```
 cd world
 gazebo world.sdf
 ```
 
-Road generation and rendering can also be done in a single step:
 
-```
-./road-generator.py presets/driving.xml | ./gazebo-renderer.py -o world
-```
 
 ## Extension
 Merge the raw world with the colored world:
