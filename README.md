@@ -27,17 +27,16 @@ export GAZEBO_PLUGIN_PATH=`pwd`:$GAZEBO_PLUGIN_PATH
 Additionally, install the font located in the commonroad/renderer/fonts subfolder, which is needed to draw speed limit numbers.
 
 ## Usage
-Generate a random scenario in CommonRoad XML from Template XML:
+```
+./gazebo-renderer.py driving-scenario.xml -o world -d 40 --add_color --concatenate_tiles
+```
+Parameter:
 
-```
-./road-generator.py presets/driving.xml -o driving-scenario.xml
-```
+--distance or -d: y-distance to origin 
 
-Render CommonRoad XML for Gazbeo:
+--add_color or -ac: color the world to create labels in the next step (optional)
 
-```
-./gazebo-renderer.py driving-scenario.xml -o world
-```
+--concatenate_tiles or -ct: concatenate the tiles to close the gaps between the tiles (optional)
 
 View in Gazbeo:
 (Make sure the plugin's build folder is set as environment variable `GAZEBO_PLUGIN_PATH`)
@@ -51,4 +50,11 @@ Road generation and rendering can also be done in a single step:
 
 ```
 ./road-generator.py presets/driving.xml | ./gazebo-renderer.py -o world
+```
+
+## Extension
+Merge the raw world with the colored world:
+
+```
+./world-merger.py world
 ```
