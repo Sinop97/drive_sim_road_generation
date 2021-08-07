@@ -162,6 +162,11 @@
             <xs:enumeration value="unknown" />
             <!-- static -->
             <xs:enumeration value="parkedVehicle" />
+			<xs:enumeration value="parkingLot" />
+            <xs:enumeration value="parkingSpot" />
+            <xs:enumeration value="noParkingZone" />
+			<xs:enumeration value="parallelParkingObstacle" />
+            <xs:enumeration value="perpendicularParkingObstacle" />
             <xs:enumeration value="constructionZone" />
             <xs:enumeration value="roadBoundary" />
             <!-- dynamic -->
@@ -207,6 +212,9 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="dashed" />
             <xs:enumeration value="solid" />
+			<xs:enumeration value="double-solid" />
+			<xs:enumeration value="dashed-solid" />
+			<xs:enumeration value="solid-dashed" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -216,6 +224,8 @@
                 maxOccurs="unbounded" />
             <xs:element name="lineMarking" type="lineMarking"
                 minOccurs="0" />
+            <xs:element name="color" type="color"
+                minOccurs="0" />
         </xs:sequence>
     </xs:complexType>
 
@@ -224,9 +234,9 @@
             <xs:element name="lineWidth" type="xs:float" />
             <xs:element name="segmentLength" type="xs:float" />
             <xs:element name="segmentGap" type="xs:float" />
+            <xs:element name="color" type="color" />
         </xs:sequence>
     </xs:complexType>
-
 
     <xs:complexType name="laneletRef">
         <xs:attribute name="ref" type="xs:integer"
@@ -253,11 +263,27 @@
             use="required" />
     </xs:complexType>
 
+    <xs:complexType name="color">
+        <xs:attribute name="red" type="xs:float" use="required"/>
+        <xs:attribute name="green" type="xs:float" use="required"/>
+        <xs:attribute name="blue" type="xs:float" use="required"/>
+    </xs:complexType>
+
     <xs:simpleType name="laneletType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="road" />
+            <xs:enumeration value="right_lane" />
+            <xs:enumeration value="left_lane" />
             <xs:enumeration value="sidewalk" />
             <xs:enumeration value="zebraCrossing" />
+	        <xs:enumeration value="startingLine" />
+			<xs:enumeration value="intersection" />
+	        <xs:enumeration value="parallelParkingObstacle" />
+            <xs:enumeration value="perpendicularParkingObstacle" />
+	        <xs:enumeration value="parkingLot" />
+            <xs:enumeration value="parkingSpot" />
+            <xs:enumeration value="noParkingLot" />
+            <xs:enumeration value="noParkingSpot" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -267,6 +293,7 @@
             <xs:element name="isStart" type="xs:boolean" minOccurs="0" />
             <xs:element name="leftBoundary" type="boundary" />
             <xs:element name="rightBoundary" type="boundary" />
+            <xs:element name="lane" type="boundary" />
             <xs:element name="predecessor" type="laneletRefList"
                 minOccurs="0" />
             <xs:element name="successor" type="laneletRefList"
@@ -276,8 +303,8 @@
             <xs:element name="adjacentRight" type="laneletAdjacentRef"
                 minOccurs="0" />
             <!-- EXTENSION -->
-            <xs:element name="stopLine" type="lineMarking" minOccurs="0" />
-            <xs:element name="stopLineAttributes" type="lineMarkingAttributes" minOccurs="0"/>
+            <xs:element name="stopLine" type="point" minOccurs="0" maxOccurs="2" />
+            <xs:element name="stopLineAttributes" type="lineMarkingAttributes" minOccurs="0" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
@@ -300,11 +327,26 @@
     </xs:complexType>
 
     <!-- EXTENSION -->
-    <xs:complexType name="parkingLot">
+	<xs:complexType name="intersectionCenter">
+        <xs:sequence>
+            <xs:element name="shape" type="shape" />
+			<xs:element name="color" type="color" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="startingLine">
         <xs:sequence>
             <xs:element name="shape" type="shape" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
+    </xs:complexType>
+	
+    <xs:complexType name="parkingLot">
+        <xs:sequence>
+			<xs:element name="startDiagonal" type="point" minOccurs="0" maxOccurs="2" />
+			<xs:element name="endDiagonal" type="point" minOccurs="0" maxOccurs="2" />
+        </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="trafficIslandJunction">
@@ -421,6 +463,19 @@
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
 
+    <xs:complexType name="roadJunction">
+        <xs:sequence>
+            <xs:element name="composition" type="laneletRefList" />
+            <xs:element name="priority" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="low" type="xs:integer" use="required" />
+                    <xs:attribute name="high" type="xs:integer" use="required" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+    </xs:complexType>
+
     <xs:complexType name="CommonRoad">
         <xs:choice maxOccurs="unbounded">
             <xs:element name="obstacle" type="obstacle"
@@ -436,6 +491,12 @@
             <xs:element name="ramp" type="ramp"
                 maxOccurs="unbounded" />
             <xs:element name="intersection" type="intersection"
+                maxOccurs="unbounded" />
+			<xs:element name="intersectionCenter" type="intersectionCenter"
+                maxOccurs="unbounded" />
+            <xs:element name="startingLine" type="startingLine"
+                maxOccurs="unbounded" />
+            <xs:element name="roadJunction" type="roadJunction"
                 maxOccurs="unbounded" />
             <xs:element name="islandJunction" type="trafficIslandJunction"
                 maxOccurs="unbounded" />

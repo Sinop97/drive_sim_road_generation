@@ -1,11 +1,19 @@
-def draw(obst):
+def draw(obst, add_color, distance):
     result = ""
     i = 0
+    
     for rect in obst.shape.rectangle:
-        result += obstacle_model("Obstacle/{0}/{1}".format(obst.id, i),
-            rect.centerPoint.x, rect.centerPoint.y, rect.length,
-            rect.width, 0.2, - rect.orientation)
-        i += 1
+      y = rect.centerPoint.y
+      name = "Obstacle/{0}/{1}".format(obst.id, i)
+
+      if add_color:
+        y += distance 
+        name = "Obstacle-Colored/{0}/{1}".format(obst.id, i)
+
+      result += obstacle_model(name,
+          rect.centerPoint.x, y, rect.length,
+          rect.width, 0.2, - rect.orientation)
+      i += 1
     return result
 
 def obstacle_model(name, x, y, length, width, height, orientation):

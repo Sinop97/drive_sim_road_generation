@@ -3,7 +3,7 @@ SIGN_MESHES = {
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
     "20_zone_beginn": {"mesh": "20zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
-    "40_zone_beginn": {"mesh": "30zone_start", "collision_box_size": "0.11 0.15 0.29",
+    "40_zone_beginn": {"mesh": "40zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
     "50_zone_beginn": {"mesh": "50zone_start", "collision_box_size": "0.11 0.15 0.29",
                        "collision_box_pose": "-0.055 0 0.145 0 0 0"},
@@ -51,8 +51,12 @@ SIGN_MESHES = {
                    "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # zone 30 (begin)
     "stvo-274.2": {"mesh": "30zone_end", "collision_box_size": "0.11 0.15 0.29",
                    "collision_box_pose": "-0.055 0 0.145 0 0 0"}, # zone 30 (end)
+    "stvo-276": {"mesh": "No_pass_start", "collision_box_size": "0.11 0.15 0.29",
+                 "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # ueberholverbot
     "stvo-306": {"mesh": "Vorfahrt", "collision_box_size": "0.11 0.15 0.29",
                  "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # vorfahrtstrasse
+    "stvo-314": {"mesh": "Parking_start", "collision_box_size": "0.11 0.15 0.29",
+                 "collision_box_pose": "-0.055 0 0.145 0 0 0"},  # parking start
     "stvo-350-10": {"mesh": "PedestrianCrossing", "collision_box_size": "0.11 0.15 0.29",
                     "collision_box_pose": "-0.055 0 0.145 0 0 0"}, # zebra crossing
     "stvo-625-10": {"mesh": "Abbiegeschild_links", "collision_box_size": "0.09 0.1 0.11",
@@ -61,14 +65,21 @@ SIGN_MESHES = {
                     "collision_box_pose": "-0.045 0 0.055 0 0 0"}, # large curve sign (left)
     "stvo-625-20": {"mesh": "Abbiegeschild_rechts", "collision_box_size": "0.09 0.1 0.11",
                     "collision_box_pose": "-0.045 0 0.055 0 0 0"},  # small curve sign (right)
-    "stvo-625-21": {"mesh": "Abbiegeschild_gross_links", "collision_box_size": "0.09 0.3 0.11",
+    "stvo-625-21": {"mesh": "Abbiegeschild_gross_rechts", "collision_box_size": "0.09 0.3 0.11",
                     "collision_box_pose": "-0.045 0 0.055 0 0 0"}  # large curve sign (right)
 }
 
 
-def draw(sign, target_dir):
-    return model(sign.centerPoint.x, sign.centerPoint.y, 0.0, sign.orientation,
-                 "Sign/{0}".format(sign.id), SIGN_MESHES[sign.type]["mesh"],
+def draw(sign, target_dir, add_color, distance):
+    y = sign.centerPoint.y
+    name =  "Sign/{0}".format(sign.id)
+
+    if add_color:
+      y += distance 
+      name =  "Sign-Colored/{0}".format(sign.id)
+
+    return model(sign.centerPoint.x, y, 0.0, sign.orientation,
+                 name, SIGN_MESHES[sign.type]["mesh"],
                  SIGN_MESHES[sign.type]["collision_box_pose"],
                  SIGN_MESHES[sign.type]["collision_box_size"])
 

@@ -7,10 +7,13 @@ class Preset:
         self.road_width = 1
         self.primitives = []
 
-def eval(root):
+def eval(root, add_color, lane_color_scheme):
+    primitive.add_color = add_color
+    primitive.lane_color_scheme = lane_color_scheme
     preset = Preset()
     preset.road_width = 0.4 # TODO
     preset.primitives = eval_element(root.find("sequence"))
+   
     return preset
 
 def eval_element(el):
@@ -46,6 +49,10 @@ def eval_element(el):
         return [
             primitive.Intersection(el.attrib)
         ]
+    elif el.tag == "roadJunction":
+        return [
+            primitive.RoadJunction(el.attrib)
+        ]
     elif el.tag == "staticObstacle":
         return [
             primitive.StraightLineObstacle(el.attrib)
@@ -62,9 +69,17 @@ def eval_element(el):
         return [
             primitive.ZebraCrossing(el.attrib)
         ]
+    elif el.tag == "startingLine":
+        return [
+            primitive.StartingLine(el.attrib)
+        ]
     elif el.tag == "parkingLot":
         return [
             primitive.ParkingLot(el.attrib)
+        ]
+    elif el.tag == "parkingSpot":
+        return [
+            primitive.ParkingSpot(el.attrib)
         ]
     elif el.tag == "parkingObstacle":
         return [

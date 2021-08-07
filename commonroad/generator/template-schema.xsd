@@ -4,6 +4,9 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="solid" />
             <xs:enumeration value="dashed" />
+			<xs:enumeration value="double-solid" />
+			<xs:enumeration value="dashed-solid" />
+			<xs:enumeration value="solid-dashed" />
             <xs:enumeration value="missing" />
         </xs:restriction>
     </xs:simpleType>
@@ -115,15 +118,21 @@
     <xs:complexType name="zebraCrossing">
         <xs:attribute name="length" type="xs:float" use="required" />
     </xs:complexType>
+	
+	<xs:complexType name="startingLine">
+        <xs:attribute name="middleLine" type="lineType" use="optional" default="dashed" />
+    </xs:complexType>
 
     <xs:complexType name="blockedArea">
         <xs:attribute name="length" type="xs:float" use="required" />
         <xs:attribute name="width" type="xs:float" use="required" />
+        <xs:attribute name="isDrivingDirection" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="trafficSign">
-        <xs:attribute name="type" type="trafficSignType" use="required" />
+        <xs:attribute name="type" type="trafficSignType" use="required" />     
         <xs:attribute name="on_opposite_side" type="xs:boolean" default="false" use="optional" />
+        <xs:attribute name="middleLine" type="lineType" use="optional" default="dashed" />
     </xs:complexType>
 
     <xs:complexType name="ramp">
@@ -177,6 +186,8 @@
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="priority-yield" />
                     <xs:enumeration value="priority-stop" />
+                    <xs:enumeration value="priority-kinked-left" />
+                    <xs:enumeration value="priority-kinked-right" />
                     <xs:enumeration value="yield" />
                     <xs:enumeration value="stop" />
                     <xs:enumeration value="equal" />
@@ -192,15 +203,57 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="orientation" use="optional">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="north" />
+                    <xs:enumeration value="east" />
+                    <xs:enumeration value="south" />
+                    <xs:enumeration value="west" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="length_north_side" type="xs:float" use="optional" />
+        <xs:attribute name="length_east_side" type="xs:float" use="optional" />
+        <xs:attribute name="length_south_side" type="xs:float" use="optional" />
+        <xs:attribute name="length_west_side" type="xs:float" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="roadJunction">
+        <xs:attribute name="turn">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="left" />
+                    <xs:enumeration value="right" />
+                    <xs:enumeration value="outer-straight" />
+                    <xs:enumeration value="inner-straight" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="isAtSideRoadJunction" type="xs:boolean" use="required" />
     </xs:complexType>
 
     <xs:complexType name="parkingLot">
         <xs:attribute name="length" type="xs:float" use="required" />
+		<xs:attribute name="isParkingZone" type="xs:boolean" use="required" />
+        <xs:attribute name="isStart" type="xs:boolean" use="optional" />
+        <xs:attribute name="isEnd" type="xs:boolean" use="optional" />
+    </xs:complexType>
+	
+	<xs:complexType name="parkingSpot">
+        <xs:attribute name="number" type="xs:integer" use="required" />
+		<xs:attribute name="isParkingZone" type="xs:boolean" use="required" />
+        <xs:attribute name="isStart" type="xs:boolean" use="optional" />
+        <xs:attribute name="isEnd" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="parkingObstacle">
-        <xs:attribute name="length" type="xs:float" use="required" />
+        <xs:attribute name="length" type="xs:float" use="optional" />
+        <xs:attribute name="height" type="xs:float" use="optional" />
         <xs:attribute name="width" type="xs:float" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+        <xs:attribute name="isStart" type="xs:boolean" use="optional" />
+        <xs:attribute name="isEnd" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="sequence">
@@ -257,13 +310,16 @@
             <xs:element name="quadBezier" type="quadBezier" maxOccurs="unbounded"/>
             <xs:element name="cubicBezier" type="cubicBezier" maxOccurs="unbounded"/>
             <xs:element name="zebraCrossing" type="zebraCrossing" maxOccurs="unbounded"/>
+			<xs:element name="startingLine" type="startingLine" maxOccurs="unbounded"/>
             <xs:element name="blockedArea" type="blockedArea" maxOccurs="unbounded"/>
             <xs:element name="trafficSign" type="trafficSign" maxOccurs="unbounded"/>
             <xs:element name="ramp" type="ramp" maxOccurs="unbounded"/>
             <xs:element name="trafficIsland" type="trafficIsland" maxOccurs="unbounded"/>
             <xs:element name="intersection" type="intersection" maxOccurs="unbounded"/>
+            <xs:element name="roadJunction" type="roadJunction" maxOccurs="unbounded"/>
             <xs:element name="staticObstacle" type="staticObstacle" maxOccurs="unbounded"/>
             <xs:element name="parkingLot" type="parkingLot" maxOccurs="unbounded"/>
+			<xs:element name="parkingSpot" type="parkingSpot" maxOccurs="unbounded"/>
             <xs:element name="parkingObstacle" type="parkingObstacle" maxOccurs="unbounded"/>
             <xs:element name="sequence" type="sequence" maxOccurs="unbounded"/>
             <xs:element name="optional" type="optional" maxOccurs="unbounded"/>

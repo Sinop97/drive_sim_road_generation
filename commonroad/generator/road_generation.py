@@ -36,14 +36,15 @@ def check_intersections(road, road_width):
         for j in range(i+2, len(road)):
             p1 = road[i].get_bounding_box(road_width)
             p2 = road[j].get_bounding_box(road_width)
-            if p1.intersects(p2):
-                return True
+            #comment out if you want to build tracks which intersect parts of the road otherwise leave out comment
+            #if p1.intersects(p2):
+                #return True
     return False
 
-def generate(root):
+def generate(root, add_color, lane_color_scheme):
     random.seed()
     while True:
-        preset = preset_parser.eval(root)
+        preset = preset_parser.eval(root, add_color, lane_color_scheme)
         primitives = preset.primitives
         road = generate_road(primitives, 0)
         if not check_intersections(road, preset.road_width):

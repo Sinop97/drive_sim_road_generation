@@ -23,12 +23,14 @@ def main():
         default=sys.stdin)
     parser.add_argument("--output", "-o", type=argparse.FileType("w"),
         default=sys.stdout)
+    parser.add_argument("--add_color", "-ac", action="store_true")
+    parser.add_argument("--lane_color_scheme", "-lcs", choices=['default', 'opposite', 'identical'], default='default')
     args = parser.parse_args()
 
     parser = etree.XMLParser(schema=SCHEMA)
     root = etree.parse(args.input, parser)
 
-    primitives = road_generation.generate(root)
+    primitives = road_generation.generate(root, args.add_color, args.lane_color_scheme)
 
     doc = schema.commonRoad()
     doc.commonRoadVersion = "1.0"
@@ -43,7 +45,7 @@ def main():
             obj.id = id
             doc.append(obj)
 
-    # adjacents
+    # adjacentscommonRoad
     for pair in lanelet_pairs:
         pair[0].adjacentLeft = schema.laneletAdjacentRef(ref=pair[1].id, drivingDir="opposite")
         pair[1].adjacentLeft = schema.laneletAdjacentRef(ref=pair[0].id, drivingDir="opposite")
