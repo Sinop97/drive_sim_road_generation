@@ -1,0 +1,82 @@
+<template>
+    <sequence>
+        <line length="0.2" isStart="true" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingLot length="2" isParkingZone="true" isStart="true" />
+        <parkingLot length="1" isParkingZone="false" />
+        <parkingLot length="2" isParkingZone="true" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="0.2"/>
+        <leftArc radius="2" angle="90" />
+
+        <line length="1" />
+        <startingLine />
+        <line length="2.2" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="1" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="false" />
+        <parkingSpot number="2" isParkingZone="true" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="2.2"/>
+        <leftArc radius="2" angle="90" />
+
+        <line length="0.1" />
+        <trafficSign type="stvo-350-10" />
+        <line length="0.4" />
+        <zebraCrossing length="0.4" />
+        <line length="0.4" />
+        <trafficSign type="stvo-350-10" on_opposite_side="true" />
+        <line length="0.1" />
+        <leftArc radius="2" angle="90" />
+
+        <blockedArea length="2" width="0.2" />
+        <leftArc radius="2" angle="90" />
+        <rightArc radius="2" angle="180" />
+        <line length="2"/>
+        <rightArc radius="2" angle="90" />
+
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="zebra"/>
+        <line length="1.6"/>
+        <trafficSign type="stvo-350-10" />
+        <line length="0.4" />
+        <zebraCrossing length="0.4" />
+        <line length="0.4" />
+        <trafficSign type="stvo-350-10" on_opposite_side="true" />
+        <line length="1.6"/>
+        <rightArc radius="2" angle="90" />
+
+        <blockedArea length="2" width="0.2" />
+        <leftArc radius="2" angle="180" />
+
+        <line length="1"/>
+        <startingLine />
+        <line length="1.6"/>
+        <trafficSign type="stvo-350-10" />
+        <line length="0.4" />
+        <zebraCrossing length="0.4" />
+        <line length="0.4" />
+        <trafficSign type="stvo-350-10" on_opposite_side="true" />
+        <line length="2.6"/>
+        <leftArc radius="2" angle="90" />
+
+        <line length="2"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1.2"/>
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="1" isParkingZone="false" isStart="true" />
+        <parkingSpot number="1" isParkingZone="true" />
+        <parkingSpot number="3" isParkingZone="false" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="5.668"/>
+        <leftArc radius="2" angle="90" />
+    
+        <line length="0.869"/>
+    </sequence>
+</template>

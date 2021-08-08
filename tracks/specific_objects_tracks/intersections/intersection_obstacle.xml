@@ -1,0 +1,30 @@
+<template>
+    <sequence>
+		<line length="1" isStart="true" />
+		<staticObstacle length="0.5" width="0.3" position="0.5" anchor="center" />
+        <intersection turn="straight" rule="yield" length_east_side="6" length_west_side="6" />
+        <leftArc radius="1.5" angle="38" />
+        <staticObstacle length="0.9" width="0.4" position="0.5" anchor="center" />
+        <line length="2"/>
+        <staticObstacle length="0.7" width="0.2" position="0.1" anchor="center" />
+        <intersection turn="right" rule="priority-kinked-right" length_north_side="1.75" length_west_side="1.75" />
+        <line length="2"/>
+        <staticObstacle length="0.6" width="0.3" position="-0.5" anchor="center" />
+        <intersection turn="left" rule="yield" length_north_side="1.75" length_east_side="1.75" />
+        <line length="2"/>
+        <intersection turn="straight" rule="stop" length_west_side="3" length_east_side="5" />
+        <staticObstacle length="0.7" width="0.3" position="-0.5" anchor="center" />
+        <line length="3"/>
+        <staticObstacle length="0.85" width="0.3" position="0.5" anchor="center" />
+        <intersection turn="straight" rule="equal" length_west_side="5" length_east_side="5" />
+        <staticObstacle length="0.9" width="0.4" position="-0.5" anchor="center" />
+        <line length="4"/>
+        <staticObstacle length="0.45" width="0.3" position="0.1" anchor="center" />
+        <intersection turn="left" rule="stop" length_north_side="1.75" length_east_side="1.75" />
+        <line length="2"/>
+        <staticObstacle length="0.4" width="0.2" position="0.2" anchor="center" />
+        <intersection turn="straight" rule="priority-stop" length_west_side="5" length_east_side="5" />
+        <staticObstacle length="0.5" width="0.4" position="0.4" anchor="center" />
+        <line length="3"/>
+    </sequence>
+</template>

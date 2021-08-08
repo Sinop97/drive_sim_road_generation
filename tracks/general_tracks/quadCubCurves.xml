@@ -1,0 +1,52 @@
+<template>
+    <sequence>
+        <line length="2" isStart="true" />
+        <startingLine />
+        <line length="1"/>
+        <trafficSign type="stvo-314" />
+        <line length="1"/>
+        <parkingLot length="2" isParkingZone="false" isStart="true" />
+        <parkingLot length="1" isParkingZone="true" isEnd="true" />
+        <line length="2" />
+        <quadBezier p1x="1" p1y="0.5" p2x="2" p2y="-1" />
+        <zebraCrossing length="0.4" />
+        <quadBezier p1x="2" p1y="-1" p2x="4" p2y="0.5" />
+        <quadBezier p1x="1" p1y="1" p2x="-3" p2y="2.5" />
+
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1"/>
+        <blockedArea length="1" width="0.2" isDrivingDirection="false"/>
+        <line length="1" middleLine="double-solid"/>
+        <cubicBezier p1x="1" p1y="1" p2x="2" p2y="-2" p3x="3.5" p3y="4" middleLine="double-solid"/>
+        <line length="0.1" middleLine="double-solid" />
+        <line length="0.6" />
+        <trafficSign type="stvo-208" />
+        <line length="0.3" />
+        <blockedArea length="2" width="0.2" />
+
+        <leftArc radius="1" angle="30" middleLine="solid-dashed"/>
+        <cubicBezier p1x="1" p1y="1" p2x="2" p2y="-2" p3x="3.5" p3y="4" middleLine="solid-dashed"/>
+        <cubicBezier p1x="1" p1y="1" p2x="2" p2y="-2" p3x="3.5" p3y="4" middleLine="solid-dashed"/>
+        <quadBezier p1x="1" p1y="1" p2x="-3" p2y="2.5" middleLine="solid-dashed"/>
+
+        <line length="1"/>
+        <parkingSpot number="1" isParkingZone="true" isStart="true" />
+        <parkingSpot number="1" isParkingZone="false" />
+        <parkingSpot number="1" isParkingZone="true" />
+        <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+        <line length="1"/>
+        <blockedArea length="1" width="0.2" isDrivingDirection="false"/>
+        <line length="0.3"/>
+        <trafficSign type="stvo-208" on_opposite_side="true" />
+        <line length="0.7"/>
+        <leftArc radius="1" angle="25"/>
+        <cubicBezier p1x="1" p1y="1.5" p2x="2" p2y="-2" p3x="4" p3y="0.5"/>
+
+        <rightArc radius="1" angle="90" rightLine="missing" middleLine="missing" />
+        <rightArc radius="1" angle="90"/>
+        <line length="1.5"/>
+        <cubicBezier p1x="0.05" p1y="1.86" p2x="1.83" p2y="0.13" p3x="2" p3y="2"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <cubicBezier p1x="1" p1y="1" p2x="2" p2y="-2" p3x="3.5" p3y="4" />
+        </sequence>
+</template>

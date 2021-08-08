@@ -1,0 +1,112 @@
+<template>
+    <sequence>
+    <line length="2" isStart="true" />
+    <trafficSign type="stvo-350-10" />
+    <zebraCrossing length="0.4" />
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <line length="1"/>
+    <line length="1.5" leftLine="missing"/>
+
+    <rightArc radius="2" angle="75"/>
+    <line length="1"/>
+
+    <trafficSign type="stvo-314" />
+    <line length="0.5" />
+    <parkingSpot number="2" isParkingZone="true" isStart="true" />
+    <parkingSpot number="1" isParkingZone="false" />
+    <parkingSpot number="1" isParkingZone="true" />
+    <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+    <line length="0.5" />
+    <trafficSign type="stvo-314" on_opposite_side="true"/>
+    <staticObstacle length="0.7" width="0.3" position="0.3" anchor="center"/>
+    <line length="0.5" />
+
+    <trafficSign type="stvo-314" />
+    <line length="0.5" />
+    <parkingLot length="1" isParkingZone="false" isStart="true" />
+    <parkingLot length="1" isParkingZone="true" />
+    <parkingLot length="1" isParkingZone="false"/>
+	<parkingObstacle width="0.28" length="1" type="parallel"/>
+    <parkingLot length="1" isParkingZone="false" />
+	<parkingObstacle width="0.3" length="1" type="parallel"/>
+    <parkingLot length="2" isParkingZone="true" isEnd="true" />
+    <line length="0.5" />
+    <trafficSign type="stvo-314" on_opposite_side="true"/>
+    <staticObstacle length="0.4" width="0.2" position="0.3" anchor="center"/>
+
+    <line length="1" />
+    <startingLine />
+    <line length="1" />
+
+    <rightArc radius="1.5" angle="195" middleLine="double-solid"/>
+    <line length="3" middleLine="dashed-solid" />
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <leftArc radius="1.5" angle="100"/>
+    <line length="2" />
+    <intersection turn="straight" rule="stop" length_east_side="9" length_west_side="5" />
+    <line length="1" />
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="zebra"/>
+    <line length="1" />
+
+    <intersection turn="right" rule="yield" length_west_side="2" length_north_side="4" />
+    <line length="1" />
+    <staticObstacle length="0.6" width="0.3" position="-0.35" anchor="center"/>
+    <line length="0.5" />
+    <zebraCrossing length="0.4" />
+    <line length="0.5" />
+    <trafficSign type="60_zone_beginn" />
+    <staticObstacle length="0.2" width="0.2" position="-0.02" anchor="left"/>
+    <line length="1.3" />
+    <staticObstacle length="1" width="0.2" position="0.2" anchor="right"/>
+    <line length="1" />
+    <staticObstacle length="0.5" width="0.3" position="0.35" anchor="center"/>
+    <line length="1" />
+    <trafficSign type="ende_60_zone" />
+
+    <leftArc radius="2" angle="80"/>
+    <rightArc radius="2" angle="80" middleLine="missing"/>
+    <rightArc radius="1" angle="60" middleLine="double-solid"/>
+    <leftArc radius="1" angle="60" middleLine="double-solid"/>
+
+    <rightArc radius="1.5" angle="90"/>
+    <line length="1" />
+    <startingLine />
+    <line length="1" />
+    <intersection turn="straight" rule="yield" length_east_side="12" length_west_side="10" />
+    <line length="1" />
+    <trafficSign type="stvo-350-10" />
+    <zebraCrossing length="0.4" />
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <staticObstacle length="0.8" width="0.35" position="0.4" anchor="center"/>
+    <line length="2" rightLine="missing" middleLine="dashed-solid"/>
+    <trafficSign type="stvo-208"/>
+    <blockedArea length="1.5" width="0.2" />
+    <line length="2" />
+    <blockedArea length="1.5" width="0.3" isDrivingDirection="false"/>
+    <line length="1" />
+    <line length="1" middleLine="double-solid" />
+
+    <rightArc radius="1.5" angle="60" middleLine="solid-dashed"/>
+    <leftArc radius="1.5" angle="60" middleLine="solid-dashed"/>
+
+    <rightArc radius="2" angle="90" middleLine="solid-dashed"/>
+    <line length="3" middleLine="dashed-solid"/>
+
+    <rightArc radius="1.5" angle="90" leftLine="missing" middleLine="dashed-solid"/>
+    <line length="1" middleLine="dashed-solid"/>
+    <leftArc radius="1.5" angle="90" rightLine="missing" leftLine="missing"/>
+    
+    <line length="1.5" />
+    <blockedArea length="2" width="0.2" isDrivingDirection="false" />
+    <line length="1.5" />
+    <trafficSign type="stvo-208"/>
+    <blockedArea length="1.6" width="0.3" />
+    <line length="1" />
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <line length="2" />
+    <intersection turn="left" rule="priority-kinked-left" length_east_side="1.5" length_north_side="4" />
+    <line length="2" />
+    <zebraCrossing length="0.4" />
+    <line length="1" />
+    </sequence>
+</template>

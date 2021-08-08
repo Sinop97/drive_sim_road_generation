@@ -1,0 +1,73 @@
+<template>
+    <sequence>
+        <line length="1" isStart="true" />
+        <startingLine />
+        <staticObstacle length="0.8" width="0.25" position="0.5" anchor="center"/>
+        <line length="2"/>
+        <leftArc radius="1" angle="90" />
+
+        <line length="2"/>
+        <leftArc radius="1" angle="90" middleLine="double-solid"/>
+        <leftArc radius="1" angle="90" middleLine="solid-dashed"/>
+
+        <rightArc radius="1" angle="90" rightLine="missing"/>
+        <rightArc radius="1" angle="90" leftLine="missing"/>
+
+        <line length="1" middleLine="solid-dashed"/>
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1" />
+
+        <rightArc radius="1" angle="90"/>
+        <rightArc radius="1" angle="90" leftLine="missing"/>
+        <leftArc radius="1" angle="90" middleLine="solid-dashed"/>
+        <leftArc radius="1" angle="90" leftLine="missing"/>
+
+        <line length="0.5"/>
+        <zebraCrossing length="0.4" />
+        <line length="0.5"/>
+
+        <leftArc radius="1" angle="90"/>
+        <zebraCrossing length="0.4" />
+
+        <rightArc radius="2" angle="90" middleLine="solid-dashed"/>
+        <rightArc radius="2" angle="90" rightLine="missing" middleLine="double-solid"/>
+        <line length="1" middleLine="double-solid"/>
+        <line length="1"/>
+        <staticObstacle length="1" width="0.3" position="0.5" anchor="center"/>
+
+        <parkingSpot number="1" isParkingZone="false" isStart="true" />
+        <parkingSpot number="2" isParkingZone="true" />
+        <parkingSpot number="3" isParkingZone="false" isEnd="true" />
+        <line length="0.5"/>
+        <blockedArea length="2" width="0.2" />
+        <line length="0.4" />
+        <line length="0.1" middleLine="double-solid"/>
+
+        <rightArc radius="1" angle="90" middleLine="double-solid"/>
+        <rightArc radius="1" angle="90" middleLine="double-solid"/>
+        <zebraCrossing length="0.4" />
+
+        <leftArc radius="1" angle="90" middleLine="solid-dashed"/>
+        <line length="0.5"/>
+        <zebraCrossing length="0.4" />
+        <line length="0.5"/>
+
+        <leftArc radius="1" angle="90" middleLine="solid-dashed"/>
+        <leftArc radius="1" angle="90" rightLine="missing"/>
+
+        <rightArc radius="1" angle="90" rightLine="missing"/>
+        <rightArc radius="1" angle="90" leftLine="missing"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="2" />
+        <line length="1" middleLine="solid-dashed"/>
+
+        <rightArc radius="1" angle="180" middleLine="solid-dashed"/>
+        <leftArc radius="2" angle="90" leftLine="missing"/>
+        <leftArc radius="2" angle="90" middleLine="solid-dashed"/>
+        <line length="3" middleLine="double-solid"/>
+        <startingLine />
+        <line length="1" middleLine="double-solid"/>
+        <line length="2"/>
+    </sequence>
+</template>

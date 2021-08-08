@@ -1,0 +1,49 @@
+<template>
+    <sequence>
+        <line length="0.1" isStart="true" />
+        
+        <rightArc radius="3.75" angle="90"  />
+        <rightArc radius="4" angle="20" middleLine="missing"/>
+        <rightArc radius="4" angle="70" />
+
+        <rightArc radius="4.5" angle="90" middleLine="dashed-solid" />
+        <rightArc radius="5" angle="15" middleLine="double-solid" leftLine="missing" />
+        <rightArc radius="5" angle="75" middleLine="double-solid" />
+         <trafficSign type="stvo-274.1" />
+        <rightArc radius="5.5" angle="90" />
+         <trafficSign type="stvo-274.2" />
+        <rightArc radius="6" angle="90" />
+
+        <rightArc radius="7" angle="90" middleLine="dashed-solid" />
+        <trafficSign type="stvo-276" />
+        <rightArc radius="8" angle="90" middleLine="double-solid" />
+        <rightArc radius="8" angle="10" middleLine="missing" leftLine="missing" />
+        <rightArc radius="9" angle="90" middleLine="solid-dashed" />
+        <rightArc radius="10" angle="90" />
+        
+        <line length="1" middleLine="missing" rightLine="missing" />
+
+        <trafficSign type="50_zone_beginn" />
+        <leftArc radius="10" angle="90" />
+        <trafficSign type="ende_50_zone" />
+        <leftArc radius="9" angle="90" middleLine="double-solid" />
+
+        <trafficSign type="70_zone_beginn" />
+        <leftArc radius="8" angle="90" />
+        <trafficSign type="ende_70_zone" />
+        <leftArc radius="7" angle="90" middleLine="solid-dashed"/>
+
+        <leftArc radius="6" angle="90" />
+        <leftArc radius="5.5" angle="15" middleLine="missing" />
+        <leftArc radius="5.5" angle="75"/>
+        <leftArc radius="5" angle="15" rightLine="missing" middleLine="double-solid" />
+        <leftArc radius="5" angle="75" middleLine="double-solid" />
+        <line length="0.01" />
+        <leftArc radius="4.5" angle="20" leftLine="missing" middleLine="solid-dashed" />
+        <leftArc radius="4.5" angle="70" middleLine="solid-dashed" />
+
+        <leftArc radius="4" angle="20" middleLine="missing" />
+        <leftArc radius="4" angle="70" />
+        <leftArc radius="3.75" angle="90" />
+    </sequence>
+</template>

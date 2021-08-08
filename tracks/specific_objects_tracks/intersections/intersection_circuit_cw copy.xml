@@ -1,0 +1,43 @@
+<template>
+    <sequence>
+        <line length="4.3" isStart="true" middleLine="solid-dashed" />
+        <line length="0.7" />
+        <intersection turn="right" rule="stop" length_east_side="3.21" length_north_side="4.65" length_west_side="2.5" />
+        <trafficSign type="stvo-276" />
+        <line length="1.99" middleLine="double-solid" />
+        <intersection turn="straight" rule="priority-stop" length_west_side="6" length_east_side="5.32" />
+        <line length="0.2" middleLine="missing" />
+        <intersection turn="straight" rule="yield" length_west_side="2.2" length_east_side="2.75" />
+        <line length="0.2" middleLine="missing" />
+        <intersection turn="straight" rule="stop" length_west_side="4.5" length_east_side="4.15" />
+        <line length="2" middleLine="solid-dashed" />
+        <intersection turn="straight" rule="equal" length_west_side="3.5" length_east_side="3" />
+        <line length="0.2" middleLine="missing" />
+        <line length="1.55" />
+        <intersection turn="straight" rule="priority-yield" length_west_side="4" length_east_side="4" />
+        <line length="0.2" middleLine="missing" />
+        <line length="1.8" />
+        <intersection turn="right" rule="yield" length_east_side="2.1" length_north_side="1.35" length_west_side="1.35" />
+        <line length="1" />
+        <intersection turn="straight" rule="priority-stop" length_west_side="2" length_east_side="1.8" />
+        <line length="0.2" middleLine="missing" />
+        <line length="1.14" />
+        <intersection turn="straight" rule="equal" length_west_side="2.4" length_east_side="2.64" />
+        <line length="0.2" middleLine="missing" />
+        <line length="1.632" />
+        <intersection turn="right" rule="priority-kinked-right" length_west_side="0.9" length_north_side="4.6" />
+        <line length="1" />
+        <trafficSign type="stvo-276" />
+        <line length="1.99" middleLine="double-solid" />
+        <rightArc radius="2" angle="90" middleLine="double-solid" />
+        <leftArc radius="3" angle="90" middleLine="double-solid" />
+        <line length="0.02" middleLine="double-solid" />
+        <line length="3.48" />
+        <leftArc radius="2" angle="90" middleLine="dashed-solid" />
+        <rightArc radius="3" angle="90" middleLine="dashed-solid" />
+        <line length="1.96" middleLine="dashed-solid" />
+        <line length="1" />
+        <intersection turn="right" rule="stop" length_west_side="3.5" length_north_side="1.5" />
+        <line length="3.972" />
+    </sequence>
+</template>

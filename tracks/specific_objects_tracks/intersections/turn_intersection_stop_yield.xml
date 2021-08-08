@@ -1,0 +1,14 @@
+<template>
+    <sequence>
+    <line length="2" isStart="true" middleLine="solid-dashed" />
+    <line length="1" />
+    <intersection turn="left" rule="stop" length_east_side="2" length_north_side="2" />
+    <line length="2"/>
+    <intersection turn="right" rule="yield" length_west_side="6" length_north_side="6" />
+    <line length="8"/>
+    <intersection turn="left" rule="yield" length_east_side="1.5" length_north_side="4" />
+    <line length="2"/>
+    <intersection turn="right" rule="stop" length_west_side="6" length_north_side="6" />
+    <line length="3" middleLine="double-solid"/>
+    </sequence>
+</template>

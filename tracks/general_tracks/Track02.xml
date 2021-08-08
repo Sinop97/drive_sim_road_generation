@@ -1,0 +1,129 @@
+<template>
+    <sequence>
+    <line length="1" isStart="true" />
+    <startingLine />
+    <trafficSign type="stvo-625-11" />
+    <quadBezier p1x="2" p1y="1.5" p2x="0.75" p2y="3.5" middleLine="double-solid" />
+    <line length="0.4" /> 
+    <parkingSpot number="2" isParkingZone="true" isStart="true" />
+    <parkingSpot number="2" isParkingZone="false" />
+    <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+    <line length="0.5" />
+    <trafficSign type="stvo-314" on_opposite_side="true"/>
+    <line length="0.6" /> 
+    <trafficSign type="stvo-350-10" />
+    <line length="0.4" /> 
+    <zebraCrossing length="0.4" />
+    <line length="0.4" /> 
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <line length="1" /> 
+    <line length="0.2" middleLine="dashed-solid"/> 
+    <quadBezier p1x="0.75" p1y="1.5" p2x="2" p2y="-1.0" middleLine="dashed-solid" />
+    <parkingSpot number="1" isParkingZone="true" isStart="true" />
+    
+    <parkingObstacle width="0.28" height="0.2" type="perpendicular" />
+    <parkingSpot number="1" isParkingZone="false" />
+    <parkingSpot number="1" isParkingZone="true" />
+    <parkingSpot number="2" isParkingZone="false" />
+    <parkingSpot number="2" isParkingZone="true" isEnd="true" />
+    <line length="0.6" />
+
+    <intersection turn="left" rule="yield" length_east_side="1.5" length_north_side="3" />
+    <line length="0.75" />
+    <trafficSign type="stvo-350-10" />
+    <line length="0.4" /> 
+    <zebraCrossing length="0.4" />
+    <line length="0.4" /> 
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <staticObstacle length="0.5" width="0.285" position="0.5" anchor="center"/>
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <staticObstacle length="1" width="0.17" position="0.5" anchor="center"/>
+
+    <trafficSign type="stvo-625-20" on_opposite_side="true" />  
+    <quadBezier p1x="0.75" p1y="1.5" p2x="2" p2y="-1.0" middleLine="double-solid"/>
+    <trafficSign type="stvo-625-20" on_opposite_side="true" />
+    <line length="1"/>
+    <line length="1.5" leftLine="missing" middleLine="solid-dashed"/>
+    <intersection turn="straight" rule="priority-stop" length_east_side="4.5" length_west_side="4" />
+    <line length="0.2" middleLine="missing" />
+    <line length="0.55"/>
+    <parkingLot length="0.5" isParkingZone="false" isStart="true" />
+	<parkingObstacle width="0.28" length="0.5" type="parallel"/>
+    <parkingLot length="1.75" isParkingZone="true"/>
+    <parkingLot length="0.5" isParkingZone="false"/>
+    <parkingLot length="0.5" isParkingZone="true" isEnd="true"/>
+    
+    <line length="0.75"/>
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <line length="0.4"/>
+
+    <intersection turn="right" rule="priority-kinked-right" length_west_side="1" length_north_side="1" />
+    <line length="1.2"/>
+
+    <quadBezier p1x="1.2" p1y="4.2" p2x="4.2" p2y="1.2" middleLine="dashed-solid" />
+    <line length="0.4"/>
+    <trafficSign type="stvo-350-10" />
+    <line length="0.4"/>
+    <zebraCrossing length="0.4" />
+    <line length="0.4"/>
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <quadBezier p1x="4.3" p1y="-1.2" p2x="0.9" p2y="3.7"/>
+    <staticObstacle length="1" width="0.25" position="0.5" anchor="center"/>
+    
+    <quadBezier p1x="3.3" p1y="0.2" p2x="0.4" p2y="2.3" middleLine="dashed-solid" />
+    <quadBezier p1x="1" p1y="3.3" p2x="3.3" p2y="0.2" middleLine="double-solid" />
+    <intersection turn="straight" rule="equal" length_east_side="8" length_west_side="5" />
+    <line length="0.2" middleLine="missing" />
+    
+    <quadBezier p1x="6.1" p1y="2.4" p2x="1.7" p2y="4.1"/>
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+
+    <quadBezier p1x="1.4" p1y="12.0" p2x="5.4" p2y="0.1"/>
+    <startingLine />
+    <cubicBezier p1x="0.78" p1y="4.9" p2x="2.3" p2y="-0.9" p3x="5.69" p3y="3.31" middleLine="double-solid"/>
+
+    <parkingLot length="1" isParkingZone="false" isStart="true" />
+    <parkingLot length="1.75" isParkingZone="true"/>
+    <parkingObstacle width="0.3" length="0.5" type="parallel"/>
+    <parkingLot length="0.5" isParkingZone="false"/>
+    <parkingObstacle width="0.3" length="0.5" type="parallel"/>
+    <parkingLot length="0.5" isParkingZone="true" isEnd="true"/>
+    <staticObstacle length="1.2" width="0.23" position="0.5" anchor="center"/>
+    <line length="0.8"/>
+    <intersection turn="straight" rule="priority-yield" length_east_side="9" length_west_side="7" />
+    <line length="0.2" middleLine="missing" />
+    <blockedArea length="1.5" width="0.25" isDrivingDirection="false"/>
+    <intersection turn="right" rule="stop" length_west_side="3" length_north_side="4.5" />
+    
+    <line length="1.2"/>
+    <staticObstacle length="0.8" width="0.25" position="-0.5" anchor="center"/>
+    <line length="1"/>
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <line length="1"/>
+    <line length="1" middleLine="solid-dashed"/>
+    <zebraCrossing length="0.4" />
+    <line length="2" middleLine="dashed-solid"/>
+    <line length="2" middleLine="double-solid" rightLine="missing"/>
+
+    <rightArc radius="1" angle="90"/>
+    <leftArc radius="1" angle="90" leftLine="missing"/>
+    <line length="0.2" />
+    <staticObstacle length="0.4" width="0.2" position="-0.5" anchor="center"/>
+    <trafficSign type="stvo-208"/>
+    <line length="0.4" />
+    <blockedArea length="2" width="0.2" />
+    <line length="2" />
+    <startingLine />
+    <line length="2" middleLine="solid-dashed"/>
+    <line length="1" middleLine="missing"/>
+    <trafficSign type="stvo-350-10" />
+    <zebraCrossing length="0.4" />
+    <trafficSign type="stvo-350-10" on_opposite_side="true"/>
+    <line length="1" middleLine="missing"/>
+    <startingLine />
+    <line length="1" middleLine="missing"/>
+
+    <rightArc radius="1.5" angle="90" middleLine="double-solid"/>
+    <line length="4" middleLine="solid-dashed"/>
+    </sequence>
+</template>

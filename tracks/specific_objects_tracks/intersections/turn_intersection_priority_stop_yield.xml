@@ -1,0 +1,17 @@
+<template>
+    <sequence>
+    <line length="2" isStart="true" middleLine="dashed-solid" />
+    <line length="1" />
+    <intersection turn="left" rule="priority-stop" length_east_side="2" length_north_side="2" />
+    <line length="2" />
+    <intersection turn="right" rule="priority-yield" length_west_side="2.3" length_north_side="1.8" />
+    <line length="4" middleLine="double-solid" />
+    <line length="3" middleLine="solid-dashed" />
+    <line length="1" />
+    <intersection turn="left" rule="priority-yield" length_east_side="1.5" length_north_side="4" />
+    <line length="1.5" middleLine="missing" />
+    <line length="0.5" />
+    <intersection turn="right" rule="priority-stop" length_west_side="2" length_north_side="2" />
+    <line length="3" middleLine="double-solid" />
+    </sequence>
+</template>

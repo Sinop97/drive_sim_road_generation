@@ -1,0 +1,120 @@
+<template>
+    <sequence>
+        <line length="0.7" isStart="true" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="true" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-10" />
+        <leftArc radius="2" angle="45" />
+        <trafficSign type="stvo-625-10" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="false" isStart="true" />
+        <parkingSpot number="2" isParkingZone="true" isEnd="true" />     
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-11" />
+        <leftArc radius="2" angle="180" />
+        <trafficSign type="stvo-625-11" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="false" isStart="true" />
+        <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-21" on_opposite_side="true" />
+        <rightArc radius="2" angle="180" />
+        <trafficSign type="stvo-625-21" on_opposite_side="true" />
+        <line length="2" />
+        
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-20" on_opposite_side="true" />
+        <rightArc radius="4" angle="90" />
+        <trafficSign type="stvo-625-20" on_opposite_side="true" />
+        <line length="2" />
+
+        <trafficSign type="stvo-625-20" on_opposite_side="true" />
+        <rightArc radius="4" angle="90" />
+        <trafficSign type="stvo-625-20" on_opposite_side="true" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="false" />
+        <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-11" />
+        <leftArc radius="1" angle="180" />
+        <trafficSign type="stvo-625-11" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="false" />
+        <parkingSpot number="2" isParkingZone="true" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-10" />
+        <leftArc radius="6" angle="90" />
+        <trafficSign type="stvo-625-10" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="true" />
+        <parkingSpot number="2" isParkingZone="false" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="1.7" /> 
+
+        <trafficSign type="stvo-625-10" />
+        <leftArc radius="2" angle="90" />
+        <trafficSign type="stvo-625-10" />
+        <line length="2" />
+
+        <line length="0.7" />
+        <trafficSign type="stvo-314" />
+        <line length="0.8" />
+        <parkingSpot number="2" isParkingZone="true" isStart="true" />
+        <parkingSpot number="2" isParkingZone="true" />
+        <parkingSpot number="2" isParkingZone="true" />
+        <parkingSpot number="2" isParkingZone="true" isEnd="true" />
+        <line length="0.8" />
+        <trafficSign type="stvo-314" on_opposite_side="true" />
+        <line length="5.7" /> 
+    </sequence>
+</template>

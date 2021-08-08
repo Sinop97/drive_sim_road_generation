@@ -1,0 +1,5 @@
+<template>
+    <sequence>    
+    <intersection turn="right" rule="priority-kinked-right" length_north_side="7" length_east_side="7" length_south_side="7" length_west_side="7" />
+    </sequence>
+</template>

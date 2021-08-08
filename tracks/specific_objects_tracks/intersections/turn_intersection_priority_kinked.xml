@@ -1,0 +1,15 @@
+<template>
+    <sequence>
+    <line length="2" isStart="true" middleLine="solid-dashed" />
+    <line length="1" />
+    <intersection turn="left" rule="priority-kinked-left" length_east_side="6" length_north_side="6" />
+    <line length="2"/>
+    <intersection turn="right" rule="priority-kinked-right" length_west_side="6" length_north_side="6" />
+    <line length="8"/>
+    <intersection turn="left" rule="priority-kinked-left" length_east_side="6" length_north_side="6" />
+    <line length="2"/>
+    <intersection turn="right" rule="priority-kinked-right" length_west_side="6" length_north_side="6" />
+    <line length="1" />
+    <line length="2" middleLine="dashed-solid"/>
+    </sequence>
+</template>

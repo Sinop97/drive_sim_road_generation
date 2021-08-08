@@ -1,0 +1,80 @@
+<template>
+    <sequence>
+    <line length="1" isStart="true" />
+    <startingLine />
+    <line length="1"/>
+
+    <rightArc radius="0.5" angle="45"/>
+    <leftArc radius="0.5" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1.5" angle="45"/>
+    <leftArc radius="1.5" angle="45"/>
+    <rightArc radius="2" angle="45" middleLine="solid-dashed"/>
+    <leftArc radius="2" angle="45" middleLine="solid-dashed"/>
+    <rightArc radius="2.5" angle="45" middleLine="solid-dashed"/>
+    <leftArc radius="2.5" angle="45"/>
+
+    <rightArc radius="2" angle="220"/>
+
+    <line length="0.02"/>
+    <leftArc radius="1" angle="45" middleLine="double-solid"/>
+    <rightArc radius="1" angle="45" middleLine="double-solid"/>
+    <leftArc radius="0.9" angle="45" middleLine="double-solid"/>
+    <rightArc radius="0.9" angle="45" middleLine="double-solid"/>
+    <leftArc radius="0.8" angle="45" middleLine="double-solid"/>
+    <rightArc radius="0.8" angle="45" middleLine="double-solid"/>
+    <leftArc radius="0.7" angle="45" middleLine="double-solid"/>
+    <rightArc radius="0.7" angle="45" middleLine="double-solid"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="0.6" angle="45"/>
+    <rightArc radius="0.6" angle="45"/>
+    <leftArc radius="0.9" angle="45"/>
+    <rightArc radius="0.9" angle="45"/>
+    <leftArc radius="0.5" angle="45"/>
+    <rightArc radius="0.5" angle="45"/>
+
+    <leftArc radius="2" angle="200"/>
+    <line length="2" rightLine="missing" leftLine="missing"/>
+    <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+    <line length="2"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+
+    <leftArc radius="0.9" angle="20"/>
+    <rightArc radius="0.9" angle="70"/>
+    <leftArc radius="1.2" angle="80"/>
+    <rightArc radius="1.2" angle="10"/>
+    <leftArc radius="1.5" angle="50"/>
+    <rightArc radius="1.5" angle="40"/>
+    <leftArc radius="0.5" angle="45" middleLine="dashed-solid"/>
+    <rightArc radius="0.5" angle="45" middleLine="dashed-solid"/>
+    <leftArc radius="1.2" angle="45" middleLine="dashed-solid"/>
+    <rightArc radius="1.2" angle="45" middleLine="dashed-solid"/>
+    <leftArc radius="1.5" angle="35"/>
+    <rightArc radius="1.5" angle="55"/>
+
+    <leftArc radius="1" angle="90"/>
+    <line length="2"/>
+    <zebraCrossing length="0.4" />
+    <line length="2"/>
+    <leftArc radius="1" angle="90"/>
+    <line length="1"/>
+    <line length="1" middleLine="missing"/>
+
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="45"/>
+    <leftArc radius="1" angle="45"/>
+    <rightArc radius="1" angle="90"/>
+    <line length="2"/>
+    </sequence>
+</template>

@@ -1,0 +1,58 @@
+<template>
+    <sequence>
+        <line length="2" isStart="true" />
+        <line length="1.5" middleLine="missing" />
+        <startingLine  middleLine="missing" />
+        <line length="1.5" middleLine="missing" />
+    
+        <rightArc radius="1.4" angle="69" />
+        <line length="1" middleLine="missing" />
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="zebra" />
+        <line length="1" />
+        <line length="3" middleLine="double-solid" />
+    
+        <leftArc radius="2" angle="82" rightLine="missing" middleLine="dashed-solid" />
+        <line length="2" middleLine="solid-dashed" />
+        <line length="2.5" middleLine="missing" />
+        <trafficSign type="stvo-350-10" />
+        <line length="0.4" />
+        <zebraCrossing length="0.4" />
+        <line length="0.4" />
+        <trafficSign type="stvo-350-10" on_opposite_side="true" />
+        <line length="1" middleLine="missing" />
+        <line length="1.5" />
+        <trafficSign type="stvo-208" />
+        <line length="0.3" />
+        <blockedArea length="2" width="0.2" />
+        <line length="1" middleLine="missing" />
+        <line length="2" middleLine="dashed-solid" />
+
+        <rightArc radius="2.4" angle="37" />
+        <line length="1" />
+        <line length="1" middleLine="missing" />
+        <line length="1.5" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1.5" />
+        <line length="3" middleLine="double-solid" />
+        <line length="3.5" middleLine="missing" />
+    
+        <leftArc radius="2" angle="105" rightLine="missing" leftLine="missing"/>
+        <line length="1" />
+        <intersection turn="straight" rule="stop" length_east_side="2" length_west_side="2" />
+        <line length="1" middleLine="double-solid"/>
+        
+        <rightArc radius="1.5" angle="103" rightLine="missing" leftLine="missing" middleLine="double-solid"/>
+        <line length="0.02" middleLine="double-solid" />
+        <line length="1.98" />
+        <line length="2" middleLine="solid-dashed" />
+
+        <leftArc radius="2" angle="90" middleLine="solid-dashed" rightLine="missing" leftLine="missing"/>
+        <line length="2" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="2"  rightLine="missing" leftLine="missing" />
+        <zebraCrossing length="0.4" />
+        <line length="1"  rightLine="missing" leftLine="missing" />
+        <line length="2"/>
+    </sequence>
+</template>

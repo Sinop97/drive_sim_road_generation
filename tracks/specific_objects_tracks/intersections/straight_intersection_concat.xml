@@ -1,0 +1,32 @@
+<template>
+    <sequence>
+    <line length="5" isStart="true" />
+    <intersection turn="right" rule="yield" length_north_side="6" length_west_side="6" />
+    <line length="0.6" />
+    <intersection turn="straight" rule="stop" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <line length="0.45" />
+    <intersection turn="straight" rule="equal" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="priority-stop" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="priority-yield" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="yield" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="stop" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="equal" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="priority-stop" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <intersection turn="straight" rule="yield" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <line length="0.7" />
+    <intersection turn="straight" rule="equal" length_east_side="6" length_west_side="6" />
+    <line length="0.2" />
+    <line length="0.55" />
+    <intersection turn="left" rule="stop" length_east_side="6" length_north_side="6" />
+    <line length="5" />
+    </sequence>
+</template>

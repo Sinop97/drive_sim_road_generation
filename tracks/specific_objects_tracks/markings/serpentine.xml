@@ -1,0 +1,93 @@
+<template>
+    <sequence>
+        <line length="2" isStart="true" />
+        <startingLine />
+        <line length="2" leftLine="missing"/>
+        <line length="1" leftLine="missing" middleLine="dashed-solid"/>
+        <line length="1.5" middleLine="dashed-solid"/>
+        <blockedArea length="3.5" width="0.35" isDrivingDirection="true" />
+        <line length="3.5"/>
+
+        <leftArc radius="2" angle="180" />
+        <zebraCrossing length="0.4" />
+        <line length="1"/>
+        <startingLine />
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <blockedArea length="1.5" width="0.1" isDrivingDirection="false" />
+        <line length="1"/>
+        <startingLine />
+        <line length="2"/>
+        <startingLine />
+        <line length="3"/>
+
+        <rightArc radius="1" angle="180" />
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines" />
+        <line length="1" />
+        <zebraCrossing length="0.4" />
+        <line length="1"/>
+        <startingLine />
+
+        <leftArc radius="0.8" angle="180" />
+        <blockedArea length="3.5" width="0.35" isDrivingDirection="true" />
+        <line length="0.75"/>
+        <blockedArea length="2" width="0.35" isDrivingDirection="false" />
+        <blockedArea length="1" width="0.2" isDrivingDirection="true" />
+        <blockedArea length="1.8" width="0.15" isDrivingDirection="false" />
+        <line length="2" middleLine="double-solid"/>
+        <startingLine />
+        <line length="2"/>
+        <zebraCrossing length="0.4" />
+        <line length="2" middleLine="double-solid"/>
+        <zebraCrossing length="0.4" />
+        <line length="2" middleLine="solid-dashed"/>
+        <startingLine />
+
+        <rightArc radius="1" angle="180" middleLine="dashed-solid"/>
+        <line length="2" middleLine="solid-dashed"/>
+        <line length="2" middleLine="double-solid"/>
+        <line length="2" />
+        <line length="1" middleLine="double-solid"/>
+        <line length="1" />
+        <line length="1" middleLine="solid-dashed"/>
+        <line length="0.75" />
+        <line length="0.75" middleLine="dashed-solid"/>
+        <line length="0.75" middleLine="dashed-solid"/>
+        <line length="0.75" middleLine="dashed-solid"/>
+        <line length="0.75" />
+        <line length="0.75" middleLine="double-solid"/>
+        <line length="2" middleLine="double-solid" leftLine="missing"/>
+        <zebraCrossing length="0.4" />
+        <line length="2" rightLine="missing"/>
+
+        <leftArc radius="1" angle="90" middleLine="double-solid" />
+        <leftArc radius="1" angle="90" middleLine="double-solid" rightLine="missing"/>
+        <line length="2" middleLine="missing"/>
+        <zebraCrossing length="0.4" />
+        <line length="1"/>
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1" />
+        <line length="2" middleLine="solid-dashed"/>
+        <startingLine />
+        <line length="1" middleLine="missing"/>
+        <line length="1" />
+        <trafficIsland zebraLength="0.4" islandWidth="0.35" signDistance="0.25" zebraMarkingType="lines"/>
+        <line length="1" />
+        <line length="1.5" middleLine="double-solid" />
+        <line length="1.5" middleLine="double-solid" rightLine="missing"/>
+        <rightArc radius="0.5" angle="90" middleLine="missing"/>
+    
+        <line length="4" />
+    </sequence>
+</template>
